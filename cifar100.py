@@ -163,8 +163,8 @@ def main():
     # Train and val
     for epoch in range(start_epoch, args.epochs):
         lr = adjust_learning_rate(optimizer, epoch)
-        
-        print('\nEpoch: [%d | %d] LR: %f' % (start_epoch, args.epochs, lr))
+
+        print('\nEpoch: [%d | %d] LR: %f' % (epoch, args.epochs, lr))
 
         train_loss, train_acc = train(trainloader, model, criterion, optimizer, epoch, use_cuda)
         test_loss, test_acc = test(testloader, model, criterion, epoch, use_cuda)
