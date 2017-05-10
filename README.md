@@ -13,3 +13,10 @@ Since the size of images in CIFAR dataset is `32x32`, popular network structures
 - [ ] [DenseNet](https://arxiv.org/abs/1608.06993)
 - [ ] [SqueezeNet](https://arxiv.org/abs/1602.07360)
 - [ ] [ResNeXt](https://arxiv.org/abs/1611.05431)
+
+### Results
+| Model              | CIFAR-10           | CIFAR-100          |
+| ------------------ | ------------------ | ------------------ |
+| alexnet            | xx.xx              | xx.xx              |
+| vgg16_bn           | xx.xx              | xx.xx              |
+| vgg19_bn           | xx.xx              | xx.xx              |
