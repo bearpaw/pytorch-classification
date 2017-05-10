@@ -135,16 +135,16 @@ def main():
 
 
     if args.evaluate:
-        print('\nEpoch: %d' % start_epoch)
+        print('\nEvaluation only')
         test_loss, test_acc = test(testloader, model, criterion, start_epoch, use_cuda)
         print(' Test Loss:  %.8f, Test Acc:  %.2f' % (test_loss, test_acc*100))
         return
 
     # Train and val
     for epoch in range(start_epoch, args.epochs):
-        print('\nEpoch: %d' % epoch)
-
         lr = adjust_learning_rate(optimizer, epoch)
+
+        print('\nEpoch: [%d | %d] LR: %f' % (start_epoch, args.epochs, lr))
 
         train_loss, train_acc = train(trainloader, model, criterion, optimizer, epoch, use_cuda)
         test_loss, test_acc = test(testloader, model, criterion, epoch, use_cuda)
