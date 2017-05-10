@@ -25,7 +25,7 @@ class VGG(nn.Module):
     def __init__(self, features, num_classes=1000):
         super(VGG, self).__init__()
         self.features = features
-        self.classifier = nn.Linear(512, 10)
+        self.classifier = nn.Linear(512, num_classes)
         self._initialize_weights()
 
     def forward(self, x):
@@ -74,69 +74,65 @@ cfg = {
 }
 
 
-def vgg11(pretrained=False, **kwargs):
+def vgg11(**kwargs):
     """VGG 11-layer model (configuration "A")
 
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
     model = VGG(make_layers(cfg['A']), **kwargs)
-    if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['vgg11']))
     return model
 
 
 def vgg11_bn(**kwargs):
     """VGG 11-layer model (configuration "A") with batch normalization"""
-    return VGG(make_layers(cfg['A'], batch_norm=True), **kwargs)
+    model = VGG(make_layers(cfg['A'], batch_norm=True), **kwargs)
+    return model
 
 
-def vgg13(pretrained=False, **kwargs):
+def vgg13(**kwargs):
     """VGG 13-layer model (configuration "B")
 
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
     model = VGG(make_layers(cfg['B']), **kwargs)
-    if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['vgg13']))
     return model
 
 
 def vgg13_bn(**kwargs):
     """VGG 13-layer model (configuration "B") with batch normalization"""
-    return VGG(make_layers(cfg['B'], batch_norm=True), **kwargs)
+    model = VGG(make_layers(cfg['B'], batch_norm=True), **kwargs)
+    return model
 
 
-def vgg16(pretrained=False, **kwargs):
+def vgg16(**kwargs):
     """VGG 16-layer model (configuration "D")
 
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
     model = VGG(make_layers(cfg['D']), **kwargs)
-    if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['vgg16']))
     return model
 
 
 def vgg16_bn(**kwargs):
     """VGG 16-layer model (configuration "D") with batch normalization"""
-    return VGG(make_layers(cfg['D'], batch_norm=True), **kwargs)
+    model = VGG(make_layers(cfg['D'], batch_norm=True), **kwargs)
+    return model
 
 
-def vgg19(pretrained=False, **kwargs):
+def vgg19(**kwargs):
     """VGG 19-layer model (configuration "E")
 
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
     model = VGG(make_layers(cfg['E']), **kwargs)
-    if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['vgg19']))
     return model
 
 
 def vgg19_bn(**kwargs):
     """VGG 19-layer model (configuration 'E') with batch normalization"""
-    return VGG(make_layers(cfg['E'], batch_norm=True), **kwargs)
+    model = VGG(make_layers(cfg['E'], batch_norm=True), **kwargs)
+    return model
