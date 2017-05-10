@@ -187,7 +187,7 @@ def main():
             }, is_best, checkpoint=args.checkpoint)
 
     logger.close()
-    logger.plot()
+    # logger.plot()
     print('Best acc:')
     print(best_acc)
 

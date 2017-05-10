@@ -15,8 +15,23 @@ Since the size of images in CIFAR dataset is `32x32`, popular network structures
 - [ ] [ResNeXt](https://arxiv.org/abs/1611.05431)
 
 ### Results
-| Model              | CIFAR-10           | CIFAR-100          |
+
+Fixed random seed: 1234
+
+| Model              | CIFAR-10 (%)       | CIFAR-100 (%)      |
 | ------------------ | ------------------ | ------------------ |
-| alexnet            | xx.xx              | xx.xx              |
-| vgg16_bn           | xx.xx              | xx.xx              |
-| vgg19_bn           | xx.xx              | xx.xx              |
+| alexnet            | 75.81              | 41.23              |
+| vgg16_bn           | 92.93              | 72.62              |
+| vgg19_bn           | 92.82              | 71.31              |
+| ------------------ | ------------------ | ------------------ |
+| resnet20           | 91.62              | xx.xx              |
+| resnet32           | 92.70              | xx.xx              |
+| resnet44           | 93.27              | xx.xx              |
+| resnet56           |               | xx.xx              |
+| resnet110          |               | xx.xx              |
+| ------------------ | ------------------ | ------------------ |
+| preresnet20        | 91.67              | xx.xx              |
+| preresnet32        | 92.68              | xx.xx              |
+| preresnet44        |               | xx.xx              |
+| preresnet56        |               | xx.xx              |
+| preresnet110       |               | xx.xx              |
