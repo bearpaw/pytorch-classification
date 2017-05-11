@@ -1,6 +1,7 @@
 # tmp dirs and files
 checkpoint
 data
+models/resadvnet*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

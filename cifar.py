@@ -1,3 +1,25 @@
+'''
+Training script for CIFAR-10/100
+Copyright (c) Wei YANG, 2017
+
+cifar10:
+    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+cifar100:
+    classes = ('beaver', 'dolphin', 'otter', 'seal', 'whale', 'aquarium fish', 
+        'flatfish', 'ray', 'shark', 'trout', 'orchids', 'poppies', 
+        'roses', 'sunflowers', 'tulips', 'bottles', 'bowls', 'cans', 
+        'cups', 'plates', 'apples', 'mushrooms', 'oranges', 'pears', 
+        'sweet peppers', 'clock', 'computer keyboard', 'lamp', 'telephone', 
+        'television', 'bed', 'chair', 'couch', 'table', 'wardrobe', 'bee', 
+        'beetle', 'butterfly', 'caterpillar', 'cockroach', 'bear', 'leopard', 
+        'lion', 'tiger', 'wolf', 'bridge', 'castle', 'house', 'road', 'skyscraper', 
+        'cloud', 'forest', 'mountain', 'plain', 'sea', 'camel', 'cattle', 'chimpanzee', 
+        'elephant', 'kangaroo', 'fox', 'porcupine', 'possum', 'raccoon', 'skunk', 'crab', 
+        'lobster', 'snail', 'spider', 'worm', 'baby', 'boy', 'girl', 'man', 'woman', 
+        'crocodile', 'dinosaur', 'lizard', 'snake', 'turtle', 'hamster', 'mouse', 'rabbit', 
+        'shrew', 'squirrel', 'maple', 'oak', 'palm', 'pine', 'willow', 'bicycle', 'bus', 
+        'motorcycle', 'pickup truck', 'train', 'lawn-mower', 'rocket', 'streetcar', 'tank', 'tractor')
+'''
 from __future__ import print_function
 
 import argparse
@@ -24,12 +46,13 @@ model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
     and callable(models.__dict__[name]))
 
-parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
+parser = argparse.ArgumentParser(description='PyTorch CIFAR10/100 Training')
 parser.add_argument('--arch', '-a', metavar='ARCH', default='resnet18',
                     choices=model_names,
                     help='model architecture: ' +
                         ' | '.join(model_names) +
                         ' (default: resnet18)')
+parser.add_argument('-d', '--dataset', default='cifar10', type=str)
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
 parser.add_argument('--epochs', default=164, type=int, metavar='N',
@@ -56,6 +79,9 @@ parser.add_argument('--manualSeed', type=int, help='manual seed')
 
 args = parser.parse_args()
 
+# Validate dataset
+assert args.dataset == 'cifar10' or args.dataset == 'cifar100', 'Dataset can only be cifar10 or cifar100.'
+
 # Use CUDA
 use_cuda = torch.cuda.is_available()
 
@@ -79,7 +105,7 @@ def main():
 
 
     # Data
-    print('==> Preparing data..')
+    print('==> Preparing dataset %s' % args.dataset)
     transform_train = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
         transforms.RandomHorizontalFlip(),
@@ -91,28 +117,29 @@ def main():
         transforms.ToTensor(),
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
     ])
+    if args.dataset == 'cifar10':
+        dataloader = datasets.CIFAR10
+        num_classes = 10
+    else:
+        dataloader = datasets.CIFAR100
+        num_classes = 100
 
-    trainset = datasets.CIFAR10(root='./data', train=True, download=True, transform=transform_train)
+
+    trainset = dataloader(root='./data', train=True, download=True, transform=transform_train)
     trainloader = data.DataLoader(trainset, batch_size=args.train_batch, shuffle=True, num_workers=args.workers)
 
-    testset = datasets.CIFAR10(root='./data', train=False, download=False, transform=transform_test)
+    testset = dataloader(root='./data', train=False, download=False, transform=transform_test)
     testloader = data.DataLoader(testset, batch_size=args.test_batch, shuffle=False, num_workers=args.workers)
-
-    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
     # Model   
     print("=> creating model '{}'".format(args.arch))
-    model = models.__dict__[args.arch](num_classes=10)
+    model = models.__dict__[args.arch](num_classes=num_classes)
     if args.arch.startswith('alexnet') or args.arch.startswith('vgg'):
         model.features = torch.nn.DataParallel(model.features)
         model.cuda()
     else:
         model = torch.nn.DataParallel(model).cuda()
-
-    if use_cuda:
-        model.cuda()
-        model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
-        cudnn.benchmark = True
+    cudnn.benchmark = True
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
@@ -220,14 +247,13 @@ def test(testloader, model, criterion, epoch, use_cuda):
             % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
     return (test_loss/total, correct*1.0/total)
 
-def save_checkpoint(state, is_best, checkpoint='checkpoint', filename='checkpoint_cifar10.pth.tar'):
+def save_checkpoint(state, is_best, checkpoint='checkpoint', filename='checkpoint.pth.tar'):
     filepath = os.path.join(checkpoint, filename)
     torch.save(state, filepath)
     if is_best:
-        shutil.copyfile(filepath, os.path.join(checkpoint, 'model_best_cifar10.pth.tar'))
+        shutil.copyfile(filepath, os.path.join(checkpoint, 'model_best.pth.tar'))
 
 def adjust_learning_rate(optimizer, epoch):
-    """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
     deday = 0
     if epoch >= 81:
         deday = 1

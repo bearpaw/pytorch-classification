@@ -7,6 +7,7 @@ Since the size of images in CIFAR dataset is `32x32`, popular network structures
 - [x] [VGG](https://arxiv.org/abs/1409.1556)
 - [x] [ResNet](https://arxiv.org/abs/1512.03385)
 - [x] [Pre-activated ResNet](https://arxiv.org/abs/1603.05027)
+- [x] [Wider (Preact)ResNet](https://arxiv.org/abs/1603.05027)
 - [x] [Hourglass Network](https://arxiv.org/abs/1603.06937)
 - [x] [Residual Attention Networks](https://arxiv.org/abs/1704.06904)
 - [ ] [Inception (v3)](http://arxiv.org/abs/1512.00567)
@@ -24,14 +25,20 @@ Fixed random seed: 1234
 | vgg16_bn           | 92.93              | 72.62              |
 | vgg19_bn           | 92.82              | 71.31              |
 | ------------------ | ------------------ | ------------------ |
-| resnet20           | 91.62              |               |
-| resnet32           | 92.70              |               |
-| resnet44           | 93.27              |               |
+| resnet20           | 91.62              | 67.49              |
+| resnet32           | 92.70              | 69.38              |
+| resnet44           | 93.27              | 73.52              |
 | resnet56           | 94.08              |               |
 | resnet110          | 93.62              |               |
 | ------------------ | ------------------ | ------------------ |
-| preresnet20        | 91.67              | 67.30              |
-| preresnet32        | 92.68              | 69.98              |
-| preresnet44        | 93.44              | 73.10              |
-| preresnet56        | 93.92              | 74.09              |
-| preresnet110       | 94.05              | 75.44              |
+| preresnet20        |               |               |
+| preresnet32        |               |               |
+| preresnet44        |               |               |
+| preresnet56        |               |               |
+| preresnet110       |               |               |
+| ------------------ | ------------------ | ------------------ |
+| ResAttNet20        | 92.14              |               |
+| ResAttNet32        | 92.62              |               |
+| ResAttNet44        | 93.74              |               |
+| ResAttNet56        | 93.98              |               |
+| ResAttNet110       | 94.22              |               |
