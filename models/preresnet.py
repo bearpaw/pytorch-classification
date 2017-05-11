@@ -8,7 +8,9 @@ import torch.utils.model_zoo as model_zoo
 
 
 __all__ = ['PreResNet', 'preresnet20', 'preresnet32', 'preresnet44', 'preresnet56',
-           'preresnet110', 'preresnet1202']
+           'preresnet110', 'preresnet1202',
+           'wrn20', 'wrn32', 'wrn44', 'wrn56', 'wrn110', 'wrn1202'
+           ]
 
 def conv3x3(in_planes, out_planes, stride=1):
     "3x3 convolution with padding"
@@ -89,18 +91,18 @@ class Bottleneck(nn.Module):
 
 class PreResNet(nn.Module):
 
-    def __init__(self, block, layers, num_classes=1000):
+    def __init__(self, block, layers, num_classes=1000, wider=1):
         self.inplanes = 16
         super(PreResNet, self).__init__()
         self.conv1 = nn.Conv2d(3, 16, kernel_size=3, padding=1,
                                bias=False)
-        self.bn1 = nn.BatchNorm2d(16)
+        self.layer1 = self._make_layer(block, 16*wider, layers[0])
+        self.layer2 = self._make_layer(block, 32*wider, layers[1], stride=2)
+        self.layer3 = self._make_layer(block, 64*wider, layers[2], stride=2)
+        self.bn = nn.BatchNorm2d(64 * wider)
         self.relu = nn.ReLU(inplace=True)
-        self.layer1 = self._make_layer(block, 16, layers[0])
-        self.layer2 = self._make_layer(block, 32, layers[1], stride=2)
-        self.layer3 = self._make_layer(block, 64, layers[2], stride=2)
         self.avgpool = nn.AvgPool2d(8)
-        self.fc = nn.Linear(64 * block.expansion, num_classes)
+        self.fc = nn.Linear(64 * wider * block.expansion, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -129,13 +131,11 @@ class PreResNet(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.relu(x)
 
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
-
+        x = self.relu(self.bn(x))
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
@@ -181,4 +181,44 @@ def preresnet1202(**kwargs):
     """Constructs a PreResNet-1202 model.
     """
     model = PreResNet(Bottleneck, [200, 200, 200], **kwargs)
+    return model
+
+def wrn20(**kwargs):
+    """Constructs a PreResNet-20 model.
+    """
+    model = PreResNet(BasicBlock, [3, 3, 3], wider=10, **kwargs)
+    return model
+
+
+def wrn32(**kwargs):
+    """Constructs a PreResNet-32 model.
+    """
+    model = PreResNet(BasicBlock, [5, 5, 5], wider=2, **kwargs)
+    return model
+
+
+def wrn44(**kwargs):
+    """Constructs a PreResNet-44 model.
+    """
+    model = PreResNet(Bottleneck, [7, 7, 7], wider=2, **kwargs)
+    return model
+
+
+def wrn56(**kwargs):
+    """Constructs a PreResNet-56 model.
+    """
+    model = PreResNet(Bottleneck, [9, 9, 9], wider=2, **kwargs)
+    return model
+
+
+def wrn110(**kwargs):
+    """Constructs a PreResNet-110 model.
+    """
+    model = PreResNet(Bottleneck, [18, 18, 18], wider=2, **kwargs)
+    return model
+
+def wrn1202(**kwargs):
+    """Constructs a PreResNet-1202 model.
+    """
+    model = PreResNet(Bottleneck, [200, 200, 200], wider=2, **kwargs)
     return model

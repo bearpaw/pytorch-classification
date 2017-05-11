@@ -24,14 +24,14 @@ Fixed random seed: 1234
 | vgg16_bn           | 92.93              | 72.62              |
 | vgg19_bn           | 92.82              | 71.31              |
 | ------------------ | ------------------ | ------------------ |
-| resnet20           | 91.62              | xx.xx              |
-| resnet32           | 92.70              | xx.xx              |
-| resnet44           | 93.27              | xx.xx              |
-| resnet56           |               | xx.xx              |
-| resnet110          |               | xx.xx              |
+| resnet20           | 91.62              |               |
+| resnet32           | 92.70              |               |
+| resnet44           | 93.27              |               |
+| resnet56           | 94.08              |               |
+| resnet110          | 93.62              |               |
 | ------------------ | ------------------ | ------------------ |
-| preresnet20        | 91.67              | xx.xx              |
-| preresnet32        | 92.68              | xx.xx              |
-| preresnet44        |               | xx.xx              |
-| preresnet56        |               | xx.xx              |
-| preresnet110       |               | xx.xx              |
+| preresnet20        | 91.67              | 67.30              |
+| preresnet32        | 92.68              | 69.98              |
+| preresnet44        | 93.44              | 73.10              |
+| preresnet56        | 93.92              | 74.09              |
+| preresnet110       | 94.05              | 75.44              |
