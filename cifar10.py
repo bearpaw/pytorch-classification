@@ -118,6 +118,7 @@ def main():
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
 
     # Resume
+    title = 'cifar-10-' + args.arch
     if args.resume:
         # Load checkpoint.
         print('==> Resuming from checkpoint..')
@@ -128,9 +129,9 @@ def main():
         start_epoch = checkpoint['epoch']
         model.load_state_dict(checkpoint['state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer'])
-        logger = Logger(os.path.join(args.checkpoint, 'log.txt'), True)
+        logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title=title, resume=True)
     else:
-        logger = Logger(os.path.join(args.checkpoint, 'log.txt'))
+        logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title=title)
         logger.set_names(['Train Loss', 'Valid Loss', 'Train Acc.', 'Valid Acc.'])
 
 
@@ -167,7 +168,9 @@ def main():
             }, is_best, checkpoint=args.checkpoint)
 
     logger.close()
-    # logger.plot()
+    logger.plot()
+    savefig(os.path.join(args.checkpoint, 'log.eps'))
+
     print('Best acc:')
     print(best_acc)
 
