@@ -47,7 +47,7 @@ model_names = sorted(name for name in models.__dict__
     and callable(models.__dict__[name]))
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10/100 Training')
-parser.add_argument('--arch', '-a', metavar='ARCH', default='resnet18',
+parser.add_argument('--arch', '-a', metavar='ARCH', default='resnet20',
                     choices=model_names,
                     help='model architecture: ' +
                         ' | '.join(model_names) +
@@ -255,10 +255,10 @@ def save_checkpoint(state, is_best, checkpoint='checkpoint', filename='checkpoin
 
 def adjust_learning_rate(optimizer, epoch):
     deday = 0
-    if epoch >= 81:
-        deday = 1
-    elif epoch >= 122:
+    if epoch >= 122:
         deday = 2
+    elif epoch >= 81:
+        deday = 1
     lr = args.lr * (0.1 ** deday)
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr

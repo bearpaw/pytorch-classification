@@ -11,8 +11,10 @@ import math
 
 import torch.nn as nn
 import torch.nn.init as init
+from torch.autograd import Variable
 
-__all__ = ['get_mean_and_std', 'init_params', 'progress_bar', 'format_time', 'mkdir_p']
+__all__ = ['get_mean_and_std', 'init_params', 'progress_bar', 'format_time', 
+    'mkdir_p', 'upsampling']
 
 
 def get_mean_and_std(dataset):
@@ -136,3 +138,8 @@ def mkdir_p(path):
             pass
         else:
             raise
+
+def upsampling(x, scale_factor=1):    
+    model = nn.UpsamplingBilinear2d(scale_factor=scale_factor)
+    output = model(Variable(x))
+    return output.data
