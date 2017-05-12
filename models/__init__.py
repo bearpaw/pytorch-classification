@@ -65,6 +65,7 @@ from .resnet import *
 from .preresnet import *
 from .hourglass import *
 from .resattnet import *
+from .ressoftattnet import *
 from .resadvnet import *
 # from .squeezenet import *
 # from .inception import *

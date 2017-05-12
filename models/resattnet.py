@@ -21,7 +21,13 @@ class Attention(nn.Module):
         out_planes = planes*block.expansion
         self.residual = block(out_planes, planes)
         self.hourglass = Hourglass(block, r, planes, depth)
-        self.fc1 = nn.Conv2d(out_planes, out_planes, kernel_size=1, bias=False)
+        self.bn = nn.BatchNorm2d(planes)
+        self.relu = nn.ReLU(inplace=True)
+        self.fc1 = nn.Sequential(
+            nn.Conv2d(out_planes, out_planes,
+                      kernel_size=1, bias=False),
+            nn.BatchNorm2d(out_planes),
+        )
         self.fc2 = nn.Conv2d(out_planes, 1, kernel_size=1, bias=False)
 
     def get_mask(self):
@@ -38,7 +44,10 @@ class Attention(nn.Module):
             tx = self.residual(tx)
 
         # mask branch
-        self.mx = F.sigmoid(self.fc2(self.fc1(self.hourglass(x))))
+        mx = self.relu(self.bn(self.hourglass(x)))
+        mx = self.fc1(mx)
+        mx = self.fc2(mx)
+        self.mx = F.sigmoid(mx)
 
         # residual attented feature
         out = tx + tx*self.mx.expand_as(tx)
@@ -59,6 +68,8 @@ class ResAttNet(nn.Module):
         self.layer2 = self._make_layer(block, 32, layers[1], stride=2)
         self.att2 = Attention(block, 1, 2, 1, 32, 2)
         self.layer3 = self._make_layer(block, 64, layers[2], stride=2)
+        self.att3 = Attention(block, 1, 2, 1, 64, 2)
+        self.bn2 = nn.BatchNorm2d(64)
         self.avgpool = nn.AvgPool2d(8)
         self.fc = nn.Linear(64 * block.expansion, num_classes)
 
@@ -95,14 +106,15 @@ class ResAttNet(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.relu(x)
 
         x = self.layer1(x)
         x = self.att1(x)
         x = self.layer2(x)
         x = self.att2(x)
         x = self.layer3(x)
+        x = self.att3(x)
+        x = self.bn2(x)
+        x = self.relu(x)
 
         x = self.avgpool(x)
         x = x.view(x.size(0), -1)
