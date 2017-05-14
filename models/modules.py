@@ -15,8 +15,9 @@ class SoftmaxAttention(nn.Module):
     def __init__(self, planes, residual=True):
         super(SoftmaxAttention, self).__init__()
         self.residual = residual
+        self.bn1 = nn.BatchNorm2d(planes)
         self.conv1 = nn.Conv2d(planes, planes, kernel_size=1, bias=False)
-        self.bn = nn.BatchNorm2d(planes)
+        self.bn2 = nn.BatchNorm2d(planes)
         self.relu = nn.ReLU(inplace=True)
         self.conv2 = nn.Conv2d(planes, 1, kernel_size=1, bias=False)
         self.softmax = nn.Softmax()
@@ -26,8 +27,11 @@ class SoftmaxAttention(nn.Module):
         return self.mask
 
     def forward(self, x):
-        mask = self.conv1(x)
-        mask = self.bn(mask)
+        # preactivate
+        mask = self.bn1(x)
+        mask = self.relu(mask)
+        mask = self.conv1(mask)
+        mask = self.bn2(mask)
         mask = self.relu(mask)
         mask = self.conv2(mask)
         mask = mask.view(mask.size(0), -1)
@@ -50,19 +54,23 @@ class SigmoidAttention(nn.Module):
     def __init__(self, planes, residual=True):
         super(SigmoidAttention, self).__init__()
         self.residual = residual
+        self.bn1 = nn.BatchNorm2d(planes)
         self.conv1 = nn.Conv2d(planes, planes, kernel_size=1, bias=False)
-        self.bn = nn.BatchNorm2d(planes)
+        self.bn2 = nn.BatchNorm2d(planes)
         self.relu = nn.ReLU(inplace=True)
         self.conv2 = nn.Conv2d(planes, 1, kernel_size=1, bias=False)
-        self.softmax = nn.Softmax()
+        self.sigmoid = nn.Sigmoid()
         self.mask = None
 
     def get_mask(self):
         return self.mask
 
     def forward(self, x):
-        mask = self.conv1(x)
-        mask = self.bn(mask)
+        # preactivate
+        mask = self.bn1(x)
+        mask = self.relu(mask)
+        mask = self.conv1(mask)
+        mask = self.bn2(mask)
         mask = self.relu(mask)
         mask = self.conv2(mask)
         mask = self.sigmoid(mask)
@@ -75,7 +83,14 @@ class SigmoidAttention(nn.Module):
 
         return out
 
-# model = SoftmaxAttention(3).cuda()
-# x = torch.randn(2,3,32,32)
-# out = model(Variable(x.cuda()))
-# print(out.size())
+# Softmax Attention 
+model = SoftmaxAttention(3).cuda()
+x = torch.randn(2,3,32,32)
+out = model(Variable(x.cuda()))
+print(out.size())
+
+# Sigmoid Attention
+model = SigmoidAttention(3).cuda()
+x = torch.randn(2,3,32,32)
+out = model(Variable(x.cuda()))
+print(out.size())

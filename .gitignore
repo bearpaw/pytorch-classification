@@ -1,7 +1,6 @@
 # tmp dirs and files
 checkpoint
 data
-models/resadvnet*
 cifar-debug.py
 test.eps
 
