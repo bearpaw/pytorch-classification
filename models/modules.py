@@ -83,14 +83,14 @@ class SigmoidAttention(nn.Module):
 
         return out
 
-# Softmax Attention 
-model = SoftmaxAttention(3).cuda()
-x = torch.randn(2,3,32,32)
-out = model(Variable(x.cuda()))
-print(out.size())
+# # Softmax Attention 
+# model = SoftmaxAttention(3).cuda()
+# x = torch.randn(2,3,32,32)
+# out = model(Variable(x.cuda()))
+# print(out.size())
 
-# Sigmoid Attention
-model = SigmoidAttention(3).cuda()
-x = torch.randn(2,3,32,32)
-out = model(Variable(x.cuda()))
-print(out.size())
+# # Sigmoid Attention
+# model = SigmoidAttention(3).cuda()
+# x = torch.randn(2,3,32,32)
+# out = model(Variable(x.cuda()))
+# print(out.size())

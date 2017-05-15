@@ -26,8 +26,8 @@ class ResSoftAttNet(nn.Module):
         self.layer1 = self._make_layer(block, 16, layers[0])
         self.layer2 = self._make_layer(block, 32, layers[1], stride=2)
         self.layer3 = self._make_layer(block, 64, layers[2], stride=2)
-        self.att = SoftmaxAttention(64)
-        self.bn = nn.BatchNorm2d(64)
+        self.att = SoftmaxAttention(64 * block.expansion)
+        self.bn = nn.BatchNorm2d(64 * block.expansion)
         self.avgpool = nn.AvgPool2d(8)
         self.fc = nn.Linear(64 * block.expansion, num_classes)
 
