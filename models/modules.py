@@ -12,14 +12,17 @@ __all__ = ['SoftmaxAttention', 'SigmoidAttention']
 
 class SoftmaxAttention(nn.Module):
     # implementation of Wang et al. "Residual Attention Network for Image Classification". CVPR, 2017.
-    def __init__(self, planes, residual=True):
+    def __init__(self, planes, residual=True, normalize=False):
         super(SoftmaxAttention, self).__init__()
         self.residual = residual
+        self.normalize = normalize
         self.bn1 = nn.BatchNorm2d(planes)
         self.conv1 = nn.Conv2d(planes, planes, kernel_size=1, bias=False)
         self.bn2 = nn.BatchNorm2d(planes)
         self.relu = nn.ReLU(inplace=True)
         self.conv2 = nn.Conv2d(planes, 1, kernel_size=1, bias=False)
+        if self.normalize == True:
+            self.bn3 = nn.BatchNorm2d(1)
         self.softmax = nn.Softmax()
         self.mask = None
 
@@ -34,6 +37,10 @@ class SoftmaxAttention(nn.Module):
         mask = self.bn2(mask)
         mask = self.relu(mask)
         mask = self.conv2(mask)
+        # print('min: %.4f | max: %.4f' % (mask.data.min(), mask.data.max()))
+        if self.normalize == True:
+            mask = self.bn3(mask)
+        # print('min: %.4f | max: %.4f' % (mask.data.min(), mask.data.max()))
         mask = mask.view(mask.size(0), -1)
         mask = self.softmax(mask)
         mask = mask.view(mask.size(0), 1, x.size(2), x.size(3))
@@ -43,7 +50,7 @@ class SoftmaxAttention(nn.Module):
 
 
         out = x * mask.expand_as(x)
-        if self.residual:
+        if self.residual == True:
             out += x
 
         return out
@@ -51,7 +58,7 @@ class SoftmaxAttention(nn.Module):
 
 class SigmoidAttention(nn.Module):
     # implementation of Wang et al. "Residual Attention Network for Image Classification". CVPR, 2017.
-    def __init__(self, planes, residual=True):
+    def __init__(self, planes, residual=True, normalize=False):
         super(SigmoidAttention, self).__init__()
         self.residual = residual
         self.bn1 = nn.BatchNorm2d(planes)

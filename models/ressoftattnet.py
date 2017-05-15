@@ -12,12 +12,12 @@ from .hourglass import Hourglass
 from .modules import *
 
 
-__all__ = ['ResSoftAttNet', 'ressoftattnet20', 'ressoftattnet32', 'ressoftattnet44', 'ressoftattnet56',
-           'ressoftattnet110', 'ressoftattnet1202']
+# __all__ = ['ResSoftAttNet', 'ressoftattnet20', 'ressoftattnet32', 'ressoftattnet44', 'ressoftattnet56',
+#            'ressoftattnet110', 'ressoftattnet1202']
 
 class ResSoftAttNet(nn.Module):
 
-    def __init__(self, block, layers, num_classes=1000):
+    def __init__(self, block, layers, normalize=False, residual=False, num_classes=1000):
         self.inplanes = 16
         super(ResSoftAttNet, self).__init__()
         self.conv1 = nn.Conv2d(3, 16, kernel_size=3, padding=1,
@@ -26,7 +26,7 @@ class ResSoftAttNet(nn.Module):
         self.layer1 = self._make_layer(block, 16, layers[0])
         self.layer2 = self._make_layer(block, 32, layers[1], stride=2)
         self.layer3 = self._make_layer(block, 64, layers[2], stride=2)
-        self.att = SoftmaxAttention(64 * block.expansion)
+        self.att = SoftmaxAttention(64 * block.expansion, normalize=normalize, residual=residual)
         self.bn = nn.BatchNorm2d(64 * block.expansion)
         self.avgpool = nn.AvgPool2d(8)
         self.fc = nn.Linear(64 * block.expansion, num_classes)
@@ -115,4 +115,86 @@ def ressoftattnet1202(**kwargs):
     """Constructs a ResSoftAttNet-1202 model.
     """
     model = ResSoftAttNet(Bottleneck, [200, 200, 200], **kwargs)
+    return model
+
+# --------------------------------------
+def ressoftattbn20(**kwargs):
+    """Constructs a ResSoftAttNet-20 model.
+    """
+    model = ResSoftAttNet(BasicBlock, [3, 3, 3], normalize=True, **kwargs)
+    return model
+
+
+def ressoftattbn32(**kwargs):
+    """Constructs a ResSoftAttNet-32 model.
+    """
+    model = ResSoftAttNet(BasicBlock, [5, 5, 5], normalize=True, **kwargs)
+    return model
+
+
+def ressoftattbn44(**kwargs):
+    """Constructs a ResSoftAttNet-44 model.
+    """
+    model = ResSoftAttNet(Bottleneck, [7, 7, 7], normalize=True, **kwargs)
+    return model
+
+
+def ressoftattbn56(**kwargs):
+    """Constructs a ResSoftAttNet-56 model.
+    """
+    model = ResSoftAttNet(Bottleneck, [9, 9, 9], normalize=True, **kwargs)
+    return model
+
+
+def ressoftattbn110(**kwargs):
+    """Constructs a ResSoftAttNet-110 model.
+    """
+    model = ResSoftAttNet(Bottleneck, [18, 18, 18], normalize=True, **kwargs)
+    return model
+
+def ressoftattbn1202(**kwargs):
+    """Constructs a ResSoftAttNet-1202 model.
+    """
+    model = ResSoftAttNet(Bottleneck, [200, 200, 200], normalize=True, **kwargs)
+    return model
+    
+# --------------------------------------
+def ressoftattbnres20(**kwargs):
+    """Constructs a ResSoftAttNet-20 model.
+    """
+    model = ResSoftAttNet(BasicBlock, [3, 3, 3], normalize=True, residual=True, **kwargs)
+    return model
+
+
+def ressoftattbnres32(**kwargs):
+    """Constructs a ResSoftAttNet-32 model.
+    """
+    model = ResSoftAttNet(BasicBlock, [5, 5, 5], normalize=True, residual=True, **kwargs)
+    return model
+
+
+def ressoftattbnres44(**kwargs):
+    """Constructs a ResSoftAttNet-44 model.
+    """
+    model = ResSoftAttNet(Bottleneck, [7, 7, 7], normalize=True, residual=True, **kwargs)
+    return model
+
+
+def ressoftattbnres56(**kwargs):
+    """Constructs a ResSoftAttNet-56 model.
+    """
+    model = ResSoftAttNet(Bottleneck, [9, 9, 9], normalize=True, residual=True, **kwargs)
+    return model
+
+
+def ressoftattbnres110(**kwargs):
+    """Constructs a ResSoftAttNet-110 model.
+    """
+    model = ResSoftAttNet(Bottleneck, [18, 18, 18], normalize=True, residual=True, **kwargs)
+    return model
+
+def ressoftattbnres1202(**kwargs):
+    """Constructs a ResSoftAttNet-1202 model.
+    """
+    model = ResSoftAttNet(Bottleneck, [200, 200, 200], normalize=True, residual=True, **kwargs)
     return model
