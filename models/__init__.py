@@ -62,11 +62,12 @@ Densenet-161             22.35           6.20
 from .alexnet import *
 from .vgg import *
 from .resnet import *
-from .preresnet import *
-from .hourglass import *
-from .resattnet import *
-from .ressoftattnet import *
-from .resadvnet import *
+from .resnext import *
+# from .preresnet import *
+# from .hourglass import *
+# from .resattnet import *
+# from .ressoftattnet import *
+# from .resadvnet import *
 # from .squeezenet import *
 # from .inception import *
 # from .densenet import *

@@ -3,6 +3,8 @@ checkpoint
 data
 cifar-debug.py
 test.eps
+dev
+monitor.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

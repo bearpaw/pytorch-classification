@@ -4,7 +4,6 @@ Ported form https://github.com/facebook/fb.resnet.torch
 '''
 import torch.nn as nn
 import math
-import torch.utils.model_zoo as model_zoo
 
 
 __all__ = ['ResNet', 'resnet20', 'resnet32', 'resnet44', 'resnet56',
