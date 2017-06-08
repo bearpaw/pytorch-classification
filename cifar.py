@@ -1,24 +1,6 @@
 '''
 Training script for CIFAR-10/100
 Copyright (c) Wei YANG, 2017
-
-cifar10:
-    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-cifar100:
-    classes = ('beaver', 'dolphin', 'otter', 'seal', 'whale', 'aquarium fish', 
-        'flatfish', 'ray', 'shark', 'trout', 'orchids', 'poppies', 
-        'roses', 'sunflowers', 'tulips', 'bottles', 'bowls', 'cans', 
-        'cups', 'plates', 'apples', 'mushrooms', 'oranges', 'pears', 
-        'sweet peppers', 'clock', 'computer keyboard', 'lamp', 'telephone', 
-        'television', 'bed', 'chair', 'couch', 'table', 'wardrobe', 'bee', 
-        'beetle', 'butterfly', 'caterpillar', 'cockroach', 'bear', 'leopard', 
-        'lion', 'tiger', 'wolf', 'bridge', 'castle', 'house', 'road', 'skyscraper', 
-        'cloud', 'forest', 'mountain', 'plain', 'sea', 'camel', 'cattle', 'chimpanzee', 
-        'elephant', 'kangaroo', 'fox', 'porcupine', 'possum', 'raccoon', 'skunk', 'crab', 
-        'lobster', 'snail', 'spider', 'worm', 'baby', 'boy', 'girl', 'man', 'woman', 
-        'crocodile', 'dinosaur', 'lizard', 'snake', 'turtle', 'hamster', 'mouse', 'rabbit', 
-        'shrew', 'squirrel', 'maple', 'oak', 'palm', 'pine', 'willow', 'bicycle', 'bus', 
-        'motorcycle', 'pickup truck', 'train', 'lawn-mower', 'rocket', 'streetcar', 'tank', 'tractor')
 '''
 from __future__ import print_function
 
@@ -53,14 +35,16 @@ parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
 # Optimization options
 parser.add_argument('--epochs', default=300, type=int, metavar='N',
                     help='number of total epochs to run')
-parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
+parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
-parser.add_argument('--train_batch', default=128, type=int, metavar='N',
+parser.add_argument('--train-batch', default=128, type=int, metavar='N',
                     help='train batchsize')
-parser.add_argument('--test_batch', default=100, type=int, metavar='N',
+parser.add_argument('--test-batch', default=100, type=int, metavar='N',
                     help='test batchsize')
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
                     metavar='LR', help='initial learning rate')
+parser.add_argument('--drop', '--dropout', default=0, type=float,
+                    metavar='Dropout', help='Dropout ratio')
 parser.add_argument('--schedule', type=int, nargs='+', default=[150, 225],
                         help='Decrease learning rate at these epochs.')
 parser.add_argument('--gamma', type=float, default=0.1, help='LR is multiplied by gamma on schedule.')
@@ -144,22 +128,32 @@ def main():
 
     # Model   
     print("==> creating model '{}'".format(args.arch))
-    if args.arch == 'resnext':
+    if args.arch.startswith('resnext'):
         model = models.__dict__[args.arch](
                     cardinality=args.cardinality,
                     num_classes=num_classes,
                     depth=args.depth,
-                    widen_factor=args.widen_factor
+                    widen_factor=args.widen_factor,
+                    dropRate=args.drop,
+                )
+    elif args.arch.startswith('wrn'):
+        model = models.__dict__[args.arch](
+                    num_classes=num_classes,
+                    depth=args.depth,
+                    widen_factor=args.widen_factor,
+                    dropRate=args.drop,
+                )
+    elif args.arch.startswith('resnet'):
+        model = models.__dict__[args.arch](
+                    num_classes=num_classes,
+                    depth=args.depth,
                 )
     else:
         model = models.__dict__[args.arch](num_classes=num_classes)
-    if args.arch.startswith('alexnet') or args.arch.startswith('vgg'):
-        model.features = torch.nn.DataParallel(model.features)
-        model.cuda()
-    else:
-        model = torch.nn.DataParallel(model).cuda()
+
+    model = torch.nn.DataParallel(model).cuda()
     cudnn.benchmark = True
-    print('    Total params: %.2fM' % (sum(p.numel() for p in model.parameters())/1000000))
+    print('    Total params: %.2fM' % (sum(p.numel() for p in model.parameters())/1000000.0))
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
@@ -185,7 +179,7 @@ def main():
     if args.evaluate:
         print('\nEvaluation only')
         test_loss, test_acc = test(testloader, model, criterion, start_epoch, use_cuda)
-        print(' Test Loss:  %.8f, Test Acc:  %.2f' % (test_loss, test_acc*100))
+        print(' Test Loss:  %.8f, Test Acc:  %.2f' % (test_loss, test_acc))
         return
 
     # Train and val

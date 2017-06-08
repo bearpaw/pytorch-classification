@@ -1,13 +1,15 @@
 '''Resnet for cifar dataset. 
-Ported form https://github.com/facebook/fb.resnet.torch
+Ported form 
+https://github.com/facebook/fb.resnet.torch
+and
+https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
 (c) YANG, Wei 
 '''
 import torch.nn as nn
 import math
 
 
-__all__ = ['ResNet', 'resnet20', 'resnet32', 'resnet44', 'resnet56',
-           'resnet110', 'resnet1202']
+__all__ = ['resnet']
 
 def conv3x3(in_planes, out_planes, stride=1):
     "3x3 convolution with padding"
@@ -88,16 +90,22 @@ class Bottleneck(nn.Module):
 
 class ResNet(nn.Module):
 
-    def __init__(self, block, layers, num_classes=1000):
+    def __init__(self, depth, num_classes=1000):
+        # Model type specifies number of layers for CIFAR-10 model
+        assert (depth - 2) % 6 == 0, 'depth should be 6n+2'
+        n = (depth - 2) / 6
+
+        block = Bottleneck if depth >=44 else BasicBlock
+
         self.inplanes = 16
         super(ResNet, self).__init__()
         self.conv1 = nn.Conv2d(3, 16, kernel_size=3, padding=1,
                                bias=False)
         self.bn1 = nn.BatchNorm2d(16)
         self.relu = nn.ReLU(inplace=True)
-        self.layer1 = self._make_layer(block, 16, layers[0])
-        self.layer2 = self._make_layer(block, 32, layers[1], stride=2)
-        self.layer3 = self._make_layer(block, 64, layers[2], stride=2)
+        self.layer1 = self._make_layer(block, 16, n)
+        self.layer2 = self._make_layer(block, 32, n, stride=2)
+        self.layer3 = self._make_layer(block, 64, n, stride=2)
         self.avgpool = nn.AvgPool2d(8)
         self.fc = nn.Linear(64 * block.expansion, num_classes)
 
@@ -142,42 +150,8 @@ class ResNet(nn.Module):
         return x
 
 
-def resnet20(**kwargs):
-    """Constructs a ResNet-20 model.
+def resnet(**kwargs):
     """
-    model = ResNet(BasicBlock, [3, 3, 3], **kwargs)
-    return model
-
-
-def resnet32(**kwargs):
-    """Constructs a ResNet-32 model.
+    Constructs a ResNet model.
     """
-    model = ResNet(BasicBlock, [5, 5, 5], **kwargs)
-    return model
-
-
-def resnet44(**kwargs):
-    """Constructs a ResNet-44 model.
-    """
-    model = ResNet(Bottleneck, [7, 7, 7], **kwargs)
-    return model
-
-
-def resnet56(**kwargs):
-    """Constructs a ResNet-56 model.
-    """
-    model = ResNet(Bottleneck, [9, 9, 9], **kwargs)
-    return model
-
-
-def resnet110(**kwargs):
-    """Constructs a ResNet-110 model.
-    """
-    model = ResNet(Bottleneck, [18, 18, 18], **kwargs)
-    return model
-
-def resnet1202(**kwargs):
-    """Constructs a ResNet-1202 model.
-    """
-    model = ResNet(Bottleneck, [200, 200, 200], **kwargs)
-    return model
+    return ResNet(**kwargs)

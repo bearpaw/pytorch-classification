@@ -55,7 +55,7 @@ class CifarResNeXt(nn.Module):
     ResNext optimized for the Cifar dataset, as specified in
     https://arxiv.org/pdf/1611.05431.pdf
     """
-    def __init__(self, cardinality, depth, num_classes, widen_factor=4):
+    def __init__(self, cardinality, depth, num_classes, widen_factor=4, dropRate=0):
         """ Constructor
         Args:
             cardinality: number of convolution groups.
