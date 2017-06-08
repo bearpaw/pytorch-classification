@@ -38,7 +38,7 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import models
 
-from utils import Bar, Logger, AverageMeter, accuracy, mkdir_p
+from utils import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
 
 
 model_names = sorted(name for name in models.__dict__
@@ -143,7 +143,7 @@ def main():
     testloader = data.DataLoader(testset, batch_size=args.test_batch, shuffle=False, num_workers=args.workers)
 
     # Model   
-    print("=> creating model '{}'".format(args.arch))
+    print("==> creating model '{}'".format(args.arch))
     if args.arch == 'resnext':
         model = models.__dict__[args.arch](
                     cardinality=args.cardinality,
@@ -159,6 +159,7 @@ def main():
     else:
         model = torch.nn.DataParallel(model).cuda()
     cudnn.benchmark = True
+    print('    Total params: %.2fM' % (sum(p.numel() for p in model.parameters())/1000000))
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
