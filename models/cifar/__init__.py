@@ -66,11 +66,4 @@ from .vgg import *
 from .resnet import *
 from .resnext import *
 from .wrn import *
-# from .preresnet import *
-# from .hourglass import *
-# from .resattnet import *
-# from .ressoftattnet import *
-# from .resadvnet import *
-# from .squeezenet import *
-# from .inception import *
-# from .densenet import *
+from .preresnet import *

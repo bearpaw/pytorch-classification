@@ -12,14 +12,19 @@ python cifar.py -a alexnet --epochs 164 --schedule 81 122 --gamma 0.1 --checkpoi
 python cifar.py -a vgg19_bn --epochs 164 --schedule 81 122 --gamma 0.1 --checkpoint checkpoints/cifar10/vgg19_bn 
 ```
 
-#### Resnet-110
+#### ResNet-110
 ```
 python cifar.py -a resnet --depth 110 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --checkpoint checkpoints/cifar10/resnet-110 
 ```
 
-#### Resnet-1202
+#### ResNet-1202
 ```
 python cifar.py -a resnet --depth 1202 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --checkpoint checkpoints/cifar10/resnet-1202 
+```
+
+#### PreResNet-110
+```
+python cifar.py -a preresnet --depth 110 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --checkpoint checkpoints/cifar10/preresnet-110 
 ```
 
 #### ResNeXt-29, 8x64d
@@ -48,14 +53,19 @@ python cifar.py -a alexnet --dataset cifar100 --checkpoint checkpoints/cifar100/
 python cifar.py -a vgg19_bn --dataset cifar100 --checkpoint checkpoints/cifar100/vgg19_bn --epochs 164 --schedule 81 122 --gamma 0.1 
 ```
 
-#### Resnet-110
+#### ResNet-110
 ```
 python cifar.py -a resnet --dataset cifar100 --depth 110 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --checkpoint checkpoints/cifar100/resnet-110 
 ```
 
-#### Resnet-1202
+#### ResNet-1202
 ```
 python cifar.py -a resnet --dataset cifar100 --depth 1202 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --checkpoint checkpoints/cifar100/resnet-1202 
+```
+
+#### PreResNet-110
+```
+python cifar.py -a preresnet --dataset cifar100 --depth 110 --epochs 164 --schedule 81 122 --gamma 0.1 --wd 1e-4 --checkpoint checkpoints/cifar100/preresnet-110 
 ```
 
 #### ResNeXt-29, 8x64d
@@ -74,7 +84,7 @@ python cifar.py -a wrn --dataset cifar100 --depth 28 --depth 28 --widen-factor 1
 
 
 ## ImageNet
-### ResNet-101
+### ResNet-18
 ```
-python imagenet.py -a resnet101 --data ~/dataset/ILSVRC2012/ --epochs 90 --schedule 31 61 --gamma 0.1 -j 12 -c checkpoints/imagenet/resnet101
+python imagenet.py -a resnet18 --data ~/dataset/ILSVRC2012/ --epochs 90 --schedule 31 61 --gamma 0.1 -j 12 -c checkpoints/imagenet/resnet18
 ```

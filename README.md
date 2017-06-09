@@ -28,16 +28,17 @@ Single-crop (224x224) validation error rate
 
 | Model                | Params (M)         |  Top-1 Error (%)   | Top-5 Error  (%)   |
 | -------------------  | ------------------ | ------------------ | ------------------ |
-| Resnet-101           | 44.55              |                    |                    |
+| Resnet-18            | 11.69              |                    |                    |
 
 
 ## Supported Architectures
 
 ### CIFAR-10 / CIFAR-100
-Since the size of images in CIFAR dataset is `32x32`, popular network structures for ImageNet need some modifications to adapt this input size. The modified models is located in the subfolder `models`:
+Since the size of images in CIFAR dataset is `32x32`, popular network structures for ImageNet need some modifications to adapt this input size. The modified models is in the package `models.cifar`:
 - [x] [AlexNet](https://arxiv.org/abs/1404.5997)
 - [x] [VGG](https://arxiv.org/abs/1409.1556) (Imported from [pytorch-cifar](https://github.com/kuangliu/pytorch-cifar))
 - [x] [ResNet](https://arxiv.org/abs/1512.03385)
+- [ ] [Pre-act-ResNet](https://arxiv.org/abs/1603.05027)
 - [x] [ResNeXt](https://arxiv.org/abs/1611.05431) (Imported from [ResNeXt.pytorch](https://github.com/prlz77/ResNeXt.pytorch))
 - [x] [Wide Residual Networks](http://arxiv.org/abs/1605.07146) (Imported from [WideResNet-pytorch](https://github.com/xternalz/WideResNet-pytorch))
 - [ ] [DenseNet](https://arxiv.org/abs/1608.06993)
