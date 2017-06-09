@@ -11,7 +11,7 @@ Classification on CIFAR10/100 with PyTorch.
 ## Results
 
 ### CIFAR
-Top1 error rate on CIFAR10/100 are reported. You may get different results when training your models with different initialization.
+Top1 error rate on CIFAR10/100 are reported. You may get different results when training your models with different random seed.
 
 | Model                | Params (M, CIFAR10)|  CIFAR-10 (%)      | CIFAR-100 (%)      |
 | -------------------  | ------------------ | ------------------ | ------------------ |

@@ -6,6 +6,7 @@ cifar-debug.py
 test.eps
 dev
 monitor.py
+exp
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

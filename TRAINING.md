@@ -76,5 +76,5 @@ python cifar.py -a wrn --dataset cifar100 --depth 28 --depth 28 --widen-factor 1
 ## ImageNet
 ### ResNet-101
 ```
-python imagenet.py -a resnet101 --data ~/dataset/ILSVRC2012/ ---epochs 90 --schedule 31 61 --gamma 0.1 -j 12 -c checkpoints/imagenet/resnet101
+python imagenet.py -a resnet101 --data ~/dataset/ILSVRC2012/ --epochs 90 --schedule 31 61 --gamma 0.1 -j 12 -c checkpoints/imagenet/resnet101
 ```
