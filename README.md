@@ -17,10 +17,11 @@ Top1 error rate on CIFAR10/100 are reported. You may get different results when 
 | -------------------  | ------------------ | ------------------ | ------------------ |
 | alexnet              | 2.47               | 22.78              | 56.13              |
 | vgg19_bn             | 20.04              | 6.66               | 28.05              |
-| Resnet-110           | 1.70               | 6.11               | 28.86              |
+| ResNet-110           | 1.70               | 6.11               | 28.86              |
+| PreResNet-110        | 1.70               | 4.94               | 23.65              |
 | WRN-28-10 (drop 0.3) | 36.48              | 3.79               | 18.14              |
 | ResNeXt-29, 8x64     | 34.43              | 3.69               | 17.38              |
-| ResNeXt-29, 16x64    | 68.16              | 3.53               |             10137  |
+| ResNeXt-29, 16x64    | 68.16              | 3.53               | 17.30              |
 
 ### ImageNet
 Single-crop (224x224) validation error rate
@@ -28,7 +29,7 @@ Single-crop (224x224) validation error rate
 
 | Model                | Params (M)         |  Top-1 Error (%)   | Top-5 Error  (%)   |
 | -------------------  | ------------------ | ------------------ | ------------------ |
-| Resnet-18            | 11.69              |                    |                    |
+| ResNet-18            | 11.69              |  35.32             | 13.59              |
 
 
 ## Supported Architectures
@@ -38,14 +39,14 @@ Since the size of images in CIFAR dataset is `32x32`, popular network structures
 - [x] [AlexNet](https://arxiv.org/abs/1404.5997)
 - [x] [VGG](https://arxiv.org/abs/1409.1556) (Imported from [pytorch-cifar](https://github.com/kuangliu/pytorch-cifar))
 - [x] [ResNet](https://arxiv.org/abs/1512.03385)
-- [ ] [Pre-act-ResNet](https://arxiv.org/abs/1603.05027)
+- [x] [Pre-act-ResNet](https://arxiv.org/abs/1603.05027)
 - [x] [ResNeXt](https://arxiv.org/abs/1611.05431) (Imported from [ResNeXt.pytorch](https://github.com/prlz77/ResNeXt.pytorch))
 - [x] [Wide Residual Networks](http://arxiv.org/abs/1605.07146) (Imported from [WideResNet-pytorch](https://github.com/xternalz/WideResNet-pytorch))
 - [ ] [DenseNet](https://arxiv.org/abs/1608.06993)
 
 ### ImageNet
-- [x] All models in `torchvision.models` (alexnet, vgg, resnet, densenet, inception_v3, squeezenet)
-- [ ] [ResNeXt](https://arxiv.org/abs/1611.05431)
+- [ ] All models in `torchvision.models` (alexnet, vgg, resnet, densenet, inception_v3, squeezenet)
+- [ ]  [ResNeXt](https://arxiv.org/abs/1611.05431)
 - [ ] [Wide Residual Networks](http://arxiv.org/abs/1605.07146)
 
 ## Training recipes
