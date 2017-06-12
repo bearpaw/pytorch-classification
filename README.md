@@ -17,15 +17,17 @@ Classification on CIFAR10/100 with PyTorch.
 ### CIFAR
 Top1 error rate on CIFAR10/100 are reported. You may get different results when training your models with different random seed.
 
-| Model                | Params (M, CIFAR10)|  CIFAR-10 (%)      | CIFAR-100 (%)      |
-| -------------------  | ------------------ | ------------------ | ------------------ |
-| alexnet              | 2.47               | 22.78              | 56.13              |
-| vgg19_bn             | 20.04              | 6.66               | 28.05              |
-| ResNet-110           | 1.70               | 6.11               | 28.86              |
-| PreResNet-110        | 1.70               | 4.94               | 23.65              |
-| WRN-28-10 (drop 0.3) | 36.48              | 3.79               | 18.14              |
-| ResNeXt-29, 8x64     | 34.43              | 3.69               | 17.38              |
-| ResNeXt-29, 16x64    | 68.16              | 3.53               | 17.30              |
+| Model                     | Params (M, CIFAR10)|  CIFAR-10 (%)      | CIFAR-100 (%)      |
+| -------------------       | ------------------ | ------------------ | ------------------ |
+| alexnet                   | 2.47               | 22.78              | 56.13              |
+| vgg19_bn                  | 20.04              | 6.66               | 28.05              |
+| ResNet-110                | 1.70               | 6.11               | 28.86              |
+| PreResNet-110             | 1.70               | 4.94               | 23.65              |
+| WRN-28-10 (drop 0.3)      | 36.48              | 3.79               | 18.14              |
+| ResNeXt-29, 8x64          | 34.43              | 3.69               | 17.38              |
+| ResNeXt-29, 16x64         | 68.16              | 3.53               | 17.30              |
+| DenseNet-BC (L=100, k=12) | 0.77               |                    |                    |
+| DenseNet-BC (L=190, k=40) | 0.77               |                    |                    |
 
 ### ImageNet
 Single-crop (224x224) validation error rate

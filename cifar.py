@@ -142,8 +142,8 @@ def main():
         model = models.__dict__[args.arch](
                     num_classes=num_classes,
                     depth=args.depth,
-                    growthRate=12,
-                    compressionRate=2,
+                    growthRate=args.growthRate,
+                    compressionRate=args.compressionRate,
                     dropRate=args.drop,
                 )        
     elif args.arch.startswith('wrn'):
