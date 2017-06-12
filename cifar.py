@@ -66,6 +66,8 @@ parser.add_argument('--arch', '-a', metavar='ARCH', default='resnet20',
 parser.add_argument('--depth', type=int, default=29, help='Model depth.')
 parser.add_argument('--cardinality', type=int, default=8, help='Model cardinality (group).')
 parser.add_argument('--widen-factor', type=int, default=4, help='Widen factor. 4 -> 64, 8 -> 128, ...')
+parser.add_argument('--growthRate', type=int, default=12, help='Growth rate for DenseNet.')
+parser.add_argument('--compressionRate', type=int, default=2, help='Compression Rate (theta) for DenseNet.')
 # Miscs
 parser.add_argument('--manualSeed', type=int, help='manual seed')
 parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
@@ -136,6 +138,14 @@ def main():
                     widen_factor=args.widen_factor,
                     dropRate=args.drop,
                 )
+    elif args.arch.startswith('densenet'):
+        model = models.__dict__[args.arch](
+                    num_classes=num_classes,
+                    depth=args.depth,
+                    growthRate=12,
+                    compressionRate=2,
+                    dropRate=args.drop,
+                )        
     elif args.arch.startswith('wrn'):
         model = models.__dict__[args.arch](
                     num_classes=num_classes,

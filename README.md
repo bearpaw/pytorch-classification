@@ -1,6 +1,10 @@
 # pytorch-classification
 Classification on CIFAR10/100 with PyTorch.
 
+## Features
+* Unified interface for different network architectures
+* Multi-GPU support
+
 ## Install
 * Install [PyTorch](http://pytorch.org/)
 * Clone recursively
