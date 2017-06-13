@@ -43,7 +43,7 @@ python cifar.py -a wrn --depth 28 --depth 28 --widen-factor 10 --drop 0.3 --epoc
 
 #### DenseNet-BC (L=100, k=12)
 **Note**: 
-* DenseNet use weight decay value `1e-4`. Use larger weight decay (`5e-4`) would harm the accuracy (95.46 vs. 94.05) 
+* DenseNet use weight decay value `1e-4`. Larger weight decay (`5e-4`) if harmful for the accuracy (95.46 vs. 94.05) 
 * Official batch size is 64. But there is no big difference using batchsize 64 or 128 (95.46 vs 95.11).
 
 ```
