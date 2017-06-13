@@ -36,8 +36,10 @@ parser.add_argument('--epochs', default=90, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
-parser.add_argument('-b', '--batch-size', default=256, type=int,
-                    metavar='N', help='mini-batch size (default: 256)')
+parser.add_argument('--train-batch', default=256, type=int, metavar='N',
+                    help='train batchsize (default: 256)')
+parser.add_argument('--test-batch', default=200, type=int, metavar='N',
+                    help='test batchsize (default: 200)')
 parser.add_argument('--lr', '--learning-rate', default=0.1, type=float,
                     metavar='LR', help='initial learning rate')
 parser.add_argument('--drop', '--dropout', default=0, type=float,
@@ -106,7 +108,7 @@ def main():
             transforms.ToTensor(),
             normalize,
         ])),
-        batch_size=args.batch_size, shuffle=True,
+        batch_size=args.train_batch, shuffle=True,
         num_workers=args.workers, pin_memory=True)
 
     val_loader = torch.utils.data.DataLoader(
@@ -116,7 +118,7 @@ def main():
             transforms.ToTensor(),
             normalize,
         ])),
-        batch_size=args.batch_size, shuffle=False,
+        batch_size=args.test_batch, shuffle=False,
         num_workers=args.workers, pin_memory=True)
         
     # create model
