@@ -1,5 +1,5 @@
 # pytorch-classification
-Classification on CIFAR10/100 with PyTorch.
+Classification on CIFAR-10/100 with PyTorch.
 
 ## Features
 * Unified interface for different network architectures

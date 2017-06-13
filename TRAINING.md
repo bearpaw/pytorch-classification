@@ -50,7 +50,7 @@ python cifar.py -a wrn --depth 28 --depth 28 --widen-factor 10 --drop 0.3 --epoc
 python cifar.py -a densenet --depth 100 --growthRate 12 --train-batch 64 --epochs 300 --schedule 150 225 --wd 1e-4 --gamma 0.1 --checkpoint checkpoints/cifar10/densenet-bc-100-12
 ```
 
-DenseNet-BC (L=190, k=40) 
+#### DenseNet-BC (L=190, k=40) 
 ```
 python cifar.py -a densenet --depth 190 --growthRate 40 --train-batch 64 --epochs 300 --schedule 150 225 --wd 1e-4 --gamma 0.1 --checkpoint checkpoints/cifar10/densenet-bc-L190-k40
 ```
@@ -99,6 +99,11 @@ python cifar.py -a wrn --dataset cifar100 --depth 28 --depth 28 --widen-factor 1
 #### DenseNet-BC (L=100, k=12)
 ```
 python cifar.py -a densenet --dataset cifar100 --depth 100 --growthRate 12 --train-batch 64 --epochs 300 --schedule 150 225 --wd 1e-4 --gamma 0.1 --checkpoint checkpoints/cifar100/densenet-bc-100-12
+```
+
+#### DenseNet-BC (L=190, k=40) 
+```
+python cifar.py -a densenet --dataset cifar100 --depth 190 --growthRate 40 --train-batch 64 --epochs 300 --schedule 150 225 --wd 1e-4 --gamma 0.1 --checkpoint checkpoints/cifar100/densenet-bc-L190-k40
 ```
 
 ## ImageNet
