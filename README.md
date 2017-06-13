@@ -4,6 +4,8 @@ Classification on CIFAR10/100 with PyTorch.
 ## Features
 * Unified interface for different network architectures
 * Multi-GPU support
+* Training progress bar with rich info
+* Training log and training curve visualization code (see `./utils/logger.py`)
 
 ## Install
 * Install [PyTorch](http://pytorch.org/)
@@ -12,12 +14,16 @@ Classification on CIFAR10/100 with PyTorch.
   git clone --recursive https://github.com/bearpaw/pytorch-classification.git
   ```
 
+## Training
+Please see the [Training recipes](TRAINING.md) for how to train the models.
+
 ## Results
 
 ### CIFAR
-Top1 error rate on CIFAR10/100 are reported. You may get different results when training your models with different random seed.
+Top1 error rate on the CIFAR-10/100 benchmarks are reported. You may get different results when training your models with different random seed.
+Note that the number of parameters are computed on the CIFAR-10 dataset.
 
-| Model                     | Params (M, CIFAR10)|  CIFAR-10 (%)      | CIFAR-100 (%)      |
+| Model                     | Params (M)|  CIFAR-10 (%)      | CIFAR-100 (%)      |
 | -------------------       | ------------------ | ------------------ | ------------------ |
 | alexnet                   | 2.47               | 22.78              | 56.13              |
 | vgg19_bn                  | 20.04              | 6.66               | 28.05              |
@@ -26,16 +32,16 @@ Top1 error rate on CIFAR10/100 are reported. You may get different results when 
 | WRN-28-10 (drop 0.3)      | 36.48              | 3.79               | 18.14              |
 | ResNeXt-29, 8x64          | 34.43              | 3.69               | 17.38              |
 | ResNeXt-29, 16x64         | 68.16              | 3.53               | 17.30              |
-| DenseNet-BC (L=100, k=12) | 0.77               |                    |                    |
-| DenseNet-BC (L=190, k=40) | 0.77               |                    |                    |
+| DenseNet-BC (L=100, k=12) | 0.77               | 4.54               |                    |
+| DenseNet-BC (L=190, k=40) | 25.62              |                    |                    |
 
 ### ImageNet
-Single-crop (224x224) validation error rate
+Single-crop (224x224) validation error rate is reported.
 
 
 | Model                | Params (M)         |  Top-1 Error (%)   | Top-5 Error  (%)   |
 | -------------------  | ------------------ | ------------------ | ------------------ |
-| ResNet-18            | 11.69              |  35.32             | 13.59              |
+| ResNet-18            | 11.69              |  30.09             | 10.78              |
 
 
 ## Supported Architectures
@@ -51,9 +57,10 @@ Since the size of images in CIFAR dataset is `32x32`, popular network structures
 - [x] [DenseNet](https://arxiv.org/abs/1608.06993)
 
 ### ImageNet
-- [ ] All models in `torchvision.models` (alexnet, vgg, resnet, densenet, inception_v3, squeezenet)
+- [x] All models in `torchvision.models` (alexnet, vgg, resnet, densenet, inception_v3, squeezenet)
 - [ ] [ResNeXt](https://arxiv.org/abs/1611.05431)
 - [ ] [Wide Residual Networks](http://arxiv.org/abs/1605.07146)
 
-## Training recipes
-Please see the [Training recipes](TRAINING.md) for how to train the models.
+
+## Contribute
+Feel free to create a pull request if you find any bugs or you want to contribute (e.g., more datasets and more network structures).
