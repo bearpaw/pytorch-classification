@@ -1,5 +1,5 @@
 # pytorch-classification
-Classification on CIFAR-10/100 with PyTorch.
+Classification on CIFAR-10/100 and ImageNet with PyTorch.
 
 ## Features
 * Unified interface for different network architectures
@@ -32,8 +32,8 @@ Note that the number of parameters are computed on the CIFAR-10 dataset.
 | WRN-28-10 (drop 0.3)      | 36.48              | 3.79               | 18.14              |
 | ResNeXt-29, 8x64          | 34.43              | 3.69               | 17.38              |
 | ResNeXt-29, 16x64         | 68.16              | 3.53               | 17.30              |
-| DenseNet-BC (L=100, k=12) | 0.77               | 4.54               |                    |
-| DenseNet-BC (L=190, k=40) | 25.62              |                    |                    |
+| DenseNet-BC (L=100, k=12) | 0.77               | 4.54               | 22.88              |
+| DenseNet-BC (L=190, k=40) | 25.62              | 3.32               |                    |
 
 ### ImageNet
 Single-crop (224x224) validation error rate is reported.
