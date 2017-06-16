@@ -23,7 +23,7 @@ Please see the [Training recipes](TRAINING.md) for how to train the models.
 Top1 error rate on the CIFAR-10/100 benchmarks are reported. You may get different results when training your models with different random seed.
 Note that the number of parameters are computed on the CIFAR-10 dataset.
 
-| Model                     | Params (M)|  CIFAR-10 (%)      | CIFAR-100 (%)      |
+| Model                     | Params (M)         |  CIFAR-10 (%)      | CIFAR-100 (%)      |
 | -------------------       | ------------------ | ------------------ | ------------------ |
 | alexnet                   | 2.47               | 22.78              | 56.13              |
 | vgg19_bn                  | 20.04              | 6.66               | 28.05              |
@@ -33,7 +33,7 @@ Note that the number of parameters are computed on the CIFAR-10 dataset.
 | ResNeXt-29, 8x64          | 34.43              | 3.69               | 17.38              |
 | ResNeXt-29, 16x64         | 68.16              | 3.53               | 17.30              |
 | DenseNet-BC (L=100, k=12) | 0.77               | 4.54               | 22.88              |
-| DenseNet-BC (L=190, k=40) | 25.62              | 3.32               |                    |
+| DenseNet-BC (L=190, k=40) | 25.62              | 3.32               | 17.17              |
 
 ### ImageNet
 Single-crop (224x224) validation error rate is reported.
