@@ -111,3 +111,9 @@ python cifar.py -a densenet --dataset cifar100 --depth 190 --growthRate 40 --tra
 ```
 python imagenet.py -a resnet18 --data ~/dataset/ILSVRC2012/ --epochs 90 --schedule 31 61 --gamma 0.1 -c checkpoints/imagenet/resnet18
 ```
+
+### ResNeXt-50 (32x4d)
+*(Originally trained on 8xGPUs)*
+```
+python imagenet.py -a resnext50 --base-width 4 --cardinality 32 --data ~/dataset/ILSVRC2012/ --epochs 90 --schedule 31 61 --gamma 0.1 -c checkpoints/imagenet/resnext50-32x4d
+```

@@ -19,14 +19,28 @@ import torch.utils.data as data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
+import models.imagenet as customized_models
 
 from utils import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
 
-model_names = sorted(name for name in models.__dict__
+# Models
+default_model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
     and callable(models.__dict__[name]))
 
+customized_models_names = sorted(name for name in customized_models.__dict__
+    if name.islower() and not name.startswith("__")
+    and callable(customized_models.__dict__[name]))
+
+for name in customized_models.__dict__:
+    if name.islower() and not name.startswith("__") and callable(customized_models.__dict__[name]):
+        models.__dict__[name] = customized_models.__dict__[name]
+
+model_names = default_model_names + customized_models_names
+
+# Parse arguments
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
+
 # Datasets
 parser.add_argument('-d', '--data', default='path to dataset', type=str)
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
@@ -63,7 +77,8 @@ parser.add_argument('--arch', '-a', metavar='ARCH', default='resnet18',
                         ' | '.join(model_names) +
                         ' (default: resnet18)')
 parser.add_argument('--depth', type=int, default=29, help='Model depth.')
-parser.add_argument('--cardinality', type=int, default=8, help='Model cardinality (group).')
+parser.add_argument('--cardinality', type=int, default=32, help='ResNet cardinality (group).')
+parser.add_argument('--base-width', type=int, default=4, help='ResNet base width.')
 parser.add_argument('--widen-factor', type=int, default=4, help='Widen factor. 4 -> 64, 8 -> 128, ...')
 # Miscs
 parser.add_argument('--manualSeed', type=int, help='manual seed')
@@ -125,6 +140,11 @@ def main():
     if args.pretrained:
         print("=> using pre-trained model '{}'".format(args.arch))
         model = models.__dict__[args.arch](pretrained=True)
+    elif args.arch.startswith('resnext'):
+        model = models.__dict__[args.arch](
+                    baseWidth=args.base_width,
+                    cardinality=args.cardinality,
+                )
     else:
         print("=> creating model '{}'".format(args.arch))
         model = models.__dict__[args.arch]()
@@ -239,8 +259,8 @@ def train(train_loader, model, criterion, optimizer, epoch, use_cuda):
         bar.suffix  = '({batch}/{size}) Data: {data:.3f}s | Batch: {bt:.3f}s | Total: {total:} | ETA: {eta:} | Loss: {loss:.4f} | top1: {top1: .4f} | top5: {top5: .4f}'.format(
                     batch=batch_idx + 1,
                     size=len(train_loader),
-                    data=data_time.avg,
-                    bt=batch_time.avg,
+                    data=data_time.val,
+                    bt=batch_time.val,
                     total=bar.elapsed_td,
                     eta=bar.eta_td,
                     loss=losses.avg,
