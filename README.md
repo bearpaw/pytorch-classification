@@ -59,7 +59,7 @@ Since the size of images in CIFAR dataset is `32x32`, popular network structures
 
 ### ImageNet
 - [x] All models in `torchvision.models` (alexnet, vgg, resnet, densenet, inception_v3, squeezenet)
-- [ ] [ResNeXt](https://arxiv.org/abs/1611.05431)
+- [x] [ResNeXt](https://arxiv.org/abs/1611.05431)
 - [ ] [Wide Residual Networks](http://arxiv.org/abs/1605.07146)
 
 
