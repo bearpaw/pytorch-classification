@@ -36,7 +36,7 @@ Note that the number of parameters are computed on the CIFAR-10 dataset.
 | DenseNet-BC (L=190, k=40) | 25.62              | 3.32               | 17.17              |
 
 
-![cifar](data/cifar.png)
+![cifar](utils/images/cifar.png)
 
 ### ImageNet
 Single-crop (224x224) validation error rate is reported. 
@@ -47,7 +47,7 @@ Single-crop (224x224) validation error rate is reported.
 | ResNet-18            | 11.69              |  30.09             | 10.78              |
 | ResNeXt-50 (32x4d)   | 25.03              |  22.6              | 6.29               |
 
-![Validation curve](data/imagenet.png)
+![Validation curve](utils/images/imagenet.png)
 
 ## Pretrained models
 Our trained models and training logs are downloadable at [OneDrive](https://mycuhk-my.sharepoint.com/personal/1155056070_link_cuhk_edu_hk/_layouts/15/guestaccess.aspx?folderid=0a380d1fece1443f0a2831b761df31905&authkey=Ac5yBC-FSE4oUJZ2Lsx7I5c).
