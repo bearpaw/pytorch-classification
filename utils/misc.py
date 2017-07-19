@@ -57,7 +57,9 @@ def mkdir_p(path):
             raise
 
 class AverageMeter(object):
-    """Computes and stores the average and current value"""
+    """Computes and stores the average and current value
+       Imported from https://github.com/pytorch/examples/blob/master/imagenet/main.py#L247-L262
+    """
     def __init__(self):
         self.reset()
 
