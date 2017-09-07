@@ -161,7 +161,7 @@ def resnext101(baseWidth, cardinality):
     """
     Construct ResNeXt-101.
     """
-    model = ResNeXt(cardinality, baseWidth, [3, 4, 23, 3], 1000)
+    model = ResNeXt(baseWidth, cardinality, [3, 4, 23, 3], 1000)
     return model
 
 
