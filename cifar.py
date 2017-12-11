@@ -73,7 +73,7 @@ parser.add_argument('--manualSeed', type=int, help='manual seed')
 parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
 #Device options
-parser.add_argument('--gpu_id', default='1', type=str,
+parser.add_argument('--gpu-id', default='0', type=str,
                     help='id(s) for CUDA_VISIBLE_DEVICES')
 
 args = parser.parse_args()
@@ -132,7 +132,7 @@ def main():
     testset = dataloader(root='./data', train=False, download=False, transform=transform_test)
     testloader = data.DataLoader(testset, batch_size=args.test_batch, shuffle=False, num_workers=args.workers)
 
-    # Model   
+    # Model
     print("==> creating model '{}'".format(args.arch))
     if args.arch.startswith('resnext'):
         model = models.__dict__[args.arch](
@@ -149,7 +149,7 @@ def main():
                     growthRate=args.growthRate,
                     compressionRate=args.compressionRate,
                     dropRate=args.drop,
-                )        
+                )
     elif args.arch.startswith('wrn'):
         model = models.__dict__[args.arch](
                     num_classes=num_classes,

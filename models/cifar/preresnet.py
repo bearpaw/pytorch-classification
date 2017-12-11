@@ -1,11 +1,11 @@
 from __future__ import absolute_import
 
-'''Resnet for cifar dataset. 
-Ported form 
+'''Resnet for cifar dataset.
+Ported form
 https://github.com/facebook/fb.resnet.torch
 and
 https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py
-(c) YANG, Wei 
+(c) YANG, Wei
 '''
 import torch.nn as nn
 import math
@@ -96,7 +96,7 @@ class PreResNet(nn.Module):
         super(PreResNet, self).__init__()
         # Model type specifies number of layers for CIFAR-10 model
         assert (depth - 2) % 6 == 0, 'depth should be 6n+2'
-        n = (depth - 2) / 6
+        n = (depth - 2) // 6
 
         block = Bottleneck if depth >=44 else BasicBlock
 

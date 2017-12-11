@@ -48,7 +48,7 @@ class WideResNet(nn.Module):
         super(WideResNet, self).__init__()
         nChannels = [16, 16*widen_factor, 32*widen_factor, 64*widen_factor]
         assert (depth - 4) % 6 == 0, 'depth should be 6n+4'
-        n = (depth - 4) / 6
+        n = (depth - 4) // 6
         block = BasicBlock
         # 1st conv before any network block
         self.conv1 = nn.Conv2d(3, nChannels[0], kernel_size=3, stride=1,
@@ -74,7 +74,7 @@ class WideResNet(nn.Module):
                 m.bias.data.zero_()
             elif isinstance(m, nn.Linear):
                 m.bias.data.zero_()
-                
+
     def forward(self, x):
         out = self.conv1(x)
         out = self.block1(out)
