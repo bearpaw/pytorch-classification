@@ -275,6 +275,7 @@ def train(train_loader, model, criterion, optimizer, scheduler, epoch, use_cuda)
 
         if args.geo_lr > 0 and batch_idx % args.geo_lr == 0:
             scheduler.on_after_batch()
+            scheduler.step(batch_idx)
 
         # measure elapsed time
         batch_time.update(time.time() - end)
