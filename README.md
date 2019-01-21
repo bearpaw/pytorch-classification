@@ -11,7 +11,7 @@ Classification on CIFAR-10/100 and ImageNet with PyTorch.
 * Install [PyTorch](http://pytorch.org/)
 * Clone recursively
   ```
-  git clone --recursive https://github.com/bearpaw/pytorch-classification.git
+  git clone --recursive https://github.com/sytelus/pytorch-classification.git
   ```
 
 ## Training
