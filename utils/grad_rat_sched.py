@@ -53,7 +53,7 @@ class GradientRatioScheduler(lr_scheduler._LRScheduler):
 
                 rat = last_g / (this_g_sum / this_g_count)
 
-                rat_sig = math.tanh(-rat) / 2.0
+                rat_sig = math.tanh(rat)
 
                 #if rat < 0.1 or rat > 10 or math.isnan(rat):
                 #    print(rat, m_i, i)
