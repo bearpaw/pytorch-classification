@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{f07c44d1-9ef4-436c-85ac-2442ae800ccf}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>cifar.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId>Global|ContinuumAnalytics|Anaconda36-64</InterpreterId>
+    <CommandLineArguments>-a vgg19_bn --epochs 164 --schedule 81 122 --gamma 0.1 --checkpoint checkpoints/cifar10/vgg19_bn</CommandLineArguments>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="cifar.py" />
+    <Compile Include="imagenet.py" />
+    <Compile Include="models\cifar\alexnet.py" />
+    <Compile Include="models\cifar\densenet.py" />
+    <Compile Include="models\cifar\preresnet.py" />
+    <Compile Include="models\cifar\resnet.py" />
+    <Compile Include="models\cifar\resnext.py" />
+    <Compile Include="models\cifar\vgg.py" />
+    <Compile Include="models\cifar\wrn.py" />
+    <Compile Include="models\cifar\__init__.py" />
+    <Compile Include="models\imagenet\resnext.py" />
+    <Compile Include="models\imagenet\__init__.py" />
+    <Compile Include="models\__init__.py" />
+    <Compile Include="utils\eval.py" />
+    <Compile Include="utils\logger.py" />
+    <Compile Include="utils\misc.py" />
+    <Compile Include="utils\progress\progress\bar.py" />
+    <Compile Include="utils\progress\progress\counter.py" />
+    <Compile Include="utils\progress\progress\helpers.py" />
+    <Compile Include="utils\progress\progress\spinner.py" />
+    <Compile Include="utils\progress\progress\__init__.py" />
+    <Compile Include="utils\progress\setup.py" />
+    <Compile Include="utils\progress\test_progress.py" />
+    <Compile Include="utils\visualize.py" />
+    <Compile Include="utils\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="checkpoints\cifar100\resnet-110\log.txt" />
+    <Content Include="checkpoints\cifar10\vgg19_bn\log.txt" />
+    <Content Include="data\cifar-10-batches-py\readme.html" />
+    <Content Include="utils\images\cifar.png" />
+    <Content Include="utils\images\imagenet.png" />
+    <Content Include="utils\progress\demo.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="checkpoints\" />
+    <Folder Include="checkpoints\cifar100\" />
+    <Folder Include="checkpoints\cifar100\resnet-110" />
+    <Folder Include="checkpoints\cifar10\" />
+    <Folder Include="checkpoints\cifar10\vgg19_bn" />
+    <Folder Include="data\" />
+    <Folder Include="data\cifar-10-batches-py" />
+    <Folder Include="models" />
+    <Folder Include="models\cifar" />
+    <Folder Include="models\imagenet" />
+    <Folder Include="utils" />
+    <Folder Include="utils\images" />
+    <Folder Include="utils\progress" />
+    <Folder Include="utils\progress\progress" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|ContinuumAnalytics|Anaconda36-64" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+</Project>
