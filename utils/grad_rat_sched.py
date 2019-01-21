@@ -15,9 +15,9 @@ class GradientRatioScheduler(lr_scheduler._LRScheduler):
         return self.cached_lrs
 
     def get_decay_factor(self):
-        return self.get_decay_factor
+        return self.decay_factor
     def set_decay_factor(self, decay_factor):
-        self.get_decay_factor = decay_factor
+        self.decay_factor = decay_factor
         self.cached_lrs = None
 
     def on_after_batch(self):
