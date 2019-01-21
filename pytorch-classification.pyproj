@@ -22,6 +22,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="cifar.py" />
+    <Compile Include="utils\grad_rat_sched.py" />
     <Compile Include="imagenet.py" />
     <Compile Include="models\cifar\alexnet.py" />
     <Compile Include="models\cifar\densenet.py" />

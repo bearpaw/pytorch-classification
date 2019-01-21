@@ -9,6 +9,7 @@ import os
 import shutil
 import time
 import random
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -21,7 +22,7 @@ import torchvision.datasets as datasets
 import torchvision.models as models
 import models.imagenet as customized_models
 
-from utils import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
+from utils import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig, GradientRatioScheduler
 
 # Models
 default_model_names = sorted(name for name in models.__dict__
@@ -81,9 +82,13 @@ parser.add_argument('--cardinality', type=int, default=32, help='ResNet cardinal
 parser.add_argument('--base-width', type=int, default=4, help='ResNet base width.')
 parser.add_argument('--widen-factor', type=int, default=4, help='Widen factor. 4 -> 64, 8 -> 128, ...')
 # Miscs
-parser.add_argument('--manualSeed', type=int, help='manual seed')
+parser.add_argument('--manualSeed', type=int, help='manual seed', default=42)
 parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
+parser.add_argument('-det', '--deterministic', dest='deterministic', action='store_true',
+                    help='Set deterministic flag for CUDA')
+parser.add_argument('--save-checkpoint-model', dest='save_checkpoint_model', action='store_true',
+                    help='Save model on checkpoint')
 parser.add_argument('--pretrained', dest='pretrained', action='store_true',
                     help='use pre-trained model')
 #Device options
@@ -98,12 +103,17 @@ os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_id
 use_cuda = torch.cuda.is_available()
 
 # Random seed
+if args.deterministic:
+    torch.backends.cudnn.deterministic = True
 if args.manualSeed is None:
     args.manualSeed = random.randint(1, 10000)
 random.seed(args.manualSeed)
+np.random.seed(args.manualSeed)
 torch.manual_seed(args.manualSeed)
 if use_cuda:
     torch.cuda.manual_seed_all(args.manualSeed)
+else:
+    print("WARNING: CUDA is not available")
 
 best_acc = 0  # best test accuracy
 
@@ -164,7 +174,9 @@ def main():
 
     # define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss().cuda()
-    optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    param_lr = GradientRatioScheduler.get_params_base_lr(model, args.lr)
+    optimizer = optim.SGD(param_lr, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    scheduler = GradientRatioScheduler(optimizer)
 
     # Resume
     title = 'ImageNet-' + args.arch
@@ -181,7 +193,7 @@ def main():
         logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title=title, resume=True)
     else:
         logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title=title)
-        logger.set_names(['Learning Rate', 'Train Loss', 'Valid Loss', 'Train Acc.', 'Valid Acc.'])
+        logger.set_names(['Epoch', 'Train Loss', 'Valid Loss', 'Train Acc.', 'Valid Acc.', 'Time', 'Learning Rate'])
 
 
     if args.evaluate:
@@ -192,26 +204,28 @@ def main():
 
     # Train and val
     for epoch in range(start_epoch, args.epochs):
-        adjust_learning_rate(optimizer, epoch)
+        adjust_learning_rate(scheduler, epoch)
 
-        print('\nEpoch: [%d | %d] LR: %f' % (epoch + 1, args.epochs, state['lr']))
+        print('\nEpoch: [%d | %d] LR: %f' % (epoch + 1, args.epochs, max(scheduler.get_lr())))
 
+        st = time.time()
         train_loss, train_acc = train(train_loader, model, criterion, optimizer, epoch, use_cuda)
         test_loss, test_acc = test(val_loader, model, criterion, epoch, use_cuda)
 
         # append logger file
-        logger.append([state['lr'], train_loss, test_loss, train_acc, test_acc])
+        logger.append([epoch, train_loss, test_loss, train_acc, test_acc, time.time()-st, scheduler.get_lr()])
 
         # save model
         is_best = test_acc > best_acc
         best_acc = max(test_acc, best_acc)
-        save_checkpoint({
-                'epoch': epoch + 1,
-                'state_dict': model.state_dict(),
-                'acc': test_acc,
-                'best_acc': best_acc,
-                'optimizer' : optimizer.state_dict(),
-            }, is_best, checkpoint=args.checkpoint)
+        if args.save_checkpoint_model:
+            save_checkpoint({
+                    'epoch': epoch + 1,
+                    'state_dict': model.state_dict(),
+                    'acc': test_acc,
+                    'best_acc': best_acc,
+                    'optimizer' : optimizer.state_dict(),
+                }, is_best, checkpoint=args.checkpoint)
 
     logger.close()
     logger.plot()
@@ -338,9 +352,7 @@ def save_checkpoint(state, is_best, checkpoint='checkpoint', filename='checkpoin
 def adjust_learning_rate(optimizer, epoch):
     global state
     if epoch in args.schedule:
-        state['lr'] *= args.gamma
-        for param_group in optimizer.param_groups:
-            param_group['lr'] = state['lr']
+        scheduler.set_decay_factor(scheduler.get_decay_factor() * args.gamma)
 
 if __name__ == '__main__':
     main()
