@@ -76,6 +76,8 @@ parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
 parser.add_argument('-det', '--deterministic', dest='deterministic', action='store_true',
                     help='Set deterministic flag for CUDA')
+parser.add_argument('--geo-lr', default=1, type=int,
+                    help='Enable Geometric learning rate on every ith batch')
 parser.add_argument('--save-checkpoint-model', dest='save_checkpoint_model', action='store_true',
                     help='Save model on checkpoint')
 #Device options
@@ -175,6 +177,8 @@ def main():
                 )
     else:
         model = models.__dict__[args.arch](num_classes=num_classes)
+    
+    print("Geometric LR: {}".format(args.geo_lr))
 
     model = torch.nn.DataParallel(model).cuda()
     cudnn.benchmark = True
@@ -216,7 +220,7 @@ def main():
         print('\nEpoch: [%d | %d] LR: %f' % (epoch + 1, args.epochs, max(scheduler.get_lr())))
 
         st = time.time()
-        train_loss, train_acc = train(trainloader, model, criterion, optimizer, epoch, use_cuda)
+        train_loss, train_acc = train(trainloader, model, criterion, optimizer, scheduler, epoch, use_cuda)
         test_loss, test_acc = test(testloader, model, criterion, epoch, use_cuda)
 
         # append logger file
@@ -241,7 +245,7 @@ def main():
     print('Best acc:')
     print(best_acc)
 
-def train(trainloader, model, criterion, optimizer, epoch, use_cuda):
+def train(trainloader, model, criterion, optimizer, scheduler,epoch, use_cuda):
     # switch to train mode
     model.train()
 
@@ -275,6 +279,9 @@ def train(trainloader, model, criterion, optimizer, epoch, use_cuda):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
+        if args.geo_lr > 0 and batch_idx % args.geo_lr == 0:
+            scheduler.on_after_batch()
 
         # measure elapsed time
         batch_time.update(time.time() - end)
