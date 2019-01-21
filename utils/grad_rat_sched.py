@@ -3,7 +3,7 @@ import math
 
 class GradientRatioScheduler(lr_scheduler._LRScheduler):
     def __init__(self, optimizer, last_epoch=-1, smooth=0, decay_factor=1):
-        self.lr_factors = [0 for _ in optimizer.param_groups]
+        self.lr_factors = [1 for _ in optimizer.param_groups]
         self.smooth = smooth
         self.decay_factor = decay_factor
         self.cached_lrs = None
@@ -11,7 +11,7 @@ class GradientRatioScheduler(lr_scheduler._LRScheduler):
 
     def get_lr(self):
         if self.cached_lrs is None:
-            self.cached_lrs = [(base_lr * self.decay_factor) + (base_lr * self.decay_factor) * self.lr_factors[i] for i,base_lr in enumerate(self.base_lrs)]
+            self.cached_lrs = [(base_lr * self.decay_factor) * self.lr_factors[i] for i,base_lr in enumerate(self.base_lrs)]
         return self.cached_lrs
 
     def get_decay_factor(self):
@@ -53,13 +53,15 @@ class GradientRatioScheduler(lr_scheduler._LRScheduler):
 
                 rat = last_g / (this_g_sum / this_g_count)
 
-                rat_sig = math.tanh(rat)
+                #rat_sig = math.tanh(rat)
+
+                rat = max(min(rat, 10.0), 0.1)
 
                 #if rat < 0.1 or rat > 10 or math.isnan(rat):
                 #    print(rat, m_i, i)
                 for j in range(i, i_start-1, -1):
                     self.lr_factors[j] = \
-                        self.smooth*self.lr_factors[j] + (1-self.smooth)*rat_sig
+                        self.smooth*self.lr_factors[j] + (1-self.smooth)*rat
             i += 1
         self.cached_lrs = None
 

@@ -12,7 +12,7 @@
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId>Global|ContinuumAnalytics|Anaconda36-64</InterpreterId>
-    <CommandLineArguments>-a vgg19_bn --epochs 164 --schedule 81 122 --gamma 0.1 --checkpoint checkpoints/cifar10/vgg19_bn</CommandLineArguments>
+    <CommandLineArguments>-a vgg19_bn --epochs 164 --lr 0.01 --schedule 81 122 --gamma 0.1 --checkpoint checkpoints/cifar10/vgg19_bn</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
