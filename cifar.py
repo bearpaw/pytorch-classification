@@ -281,8 +281,9 @@ def train(trainloader, model, criterion, optimizer, scheduler,epoch, use_cuda):
         optimizer.step()
 
         if args.geo_lr > 0 and batch_idx % args.geo_lr == 0:
-            scheduler.on_after_batch()
-            scheduler.step(batch_idx)
+            with torch.no_grad():
+                scheduler.on_after_batch()
+                scheduler.step(batch_idx)
 
         # measure elapsed time
         batch_time.update(time.time() - end)

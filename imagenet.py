@@ -140,7 +140,7 @@ def main():
             normalize,
         ])),
         batch_size=args.train_batch, shuffle=True,
-        num_workers=args.workers, pin_memory=True)
+        num_workers=args.workers, pin_memory=False)
 
     val_loader = torch.utils.data.DataLoader(
         datasets.ImageFolder(valdir, transforms.Compose([
@@ -150,7 +150,7 @@ def main():
             normalize,
         ])),
         batch_size=args.test_batch, shuffle=False,
-        num_workers=args.workers, pin_memory=True)
+        num_workers=args.workers, pin_memory=False)
 
     # create model
     if args.pretrained:
@@ -274,8 +274,10 @@ def train(train_loader, model, criterion, optimizer, scheduler, epoch, use_cuda)
         optimizer.step()
 
         if args.geo_lr > 0 and batch_idx % args.geo_lr == 0:
-            scheduler.on_after_batch()
-            scheduler.step(batch_idx)
+            with torch.no_grad():
+                scheduler.on_after_batch()
+                scheduler.step(batch_idx)
+
 
         # measure elapsed time
         batch_time.update(time.time() - end)
@@ -357,7 +359,7 @@ def save_checkpoint(state, is_best, checkpoint='checkpoint', filename='checkpoin
     if is_best:
         shutil.copyfile(filepath, os.path.join(checkpoint, 'model_best.pth.tar'))
 
-def adjust_learning_rate(optimizer, epoch):
+def adjust_learning_rate(scheduler, epoch):
     global state
     if epoch in args.schedule:
         scheduler.set_decay_factor(scheduler.get_decay_factor() * args.gamma)
