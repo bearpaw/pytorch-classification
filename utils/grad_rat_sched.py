@@ -18,7 +18,7 @@ class GradientRatioScheduler(lr_scheduler._LRScheduler):
         return alpha*lr0 + (1-alpha)*(lr0*factor)
     def get_rat_blended_lr(self):
         epoch = max(self.last_epoch, 0)
-        alpha = min(epoch/10.0, 1.0)
+        alpha = min(epoch/20.0, 1.0)
         return [self.blend_lr(base_lr * self.decay_factor, self.lr_factors[i], alpha) for i,base_lr in enumerate(self.base_lrs)]
 
     def get_rat_mul_lr(self):
