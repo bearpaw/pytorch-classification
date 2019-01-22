@@ -11,7 +11,7 @@ class GradientRatioScheduler(lr_scheduler._LRScheduler):
 
     def get_lr(self):
         if self.cached_lrs is None:
-            self.cached_lrs = self.get_rat_mul_lr()
+            self.cached_lrs = self.get_rat_blended_lr() #self.get_rat_mul_lr()
         return self.cached_lrs
 
     def blend_lr(self, lr0, factor, alpha):
@@ -20,6 +20,10 @@ class GradientRatioScheduler(lr_scheduler._LRScheduler):
         epoch = max(self.last_epoch, 0)
         alpha = min(epoch/20.0, 1.0)
         return [self.blend_lr(base_lr * self.decay_factor, self.lr_factors[i], alpha) for i,base_lr in enumerate(self.base_lrs)]
+
+    def get_shake_it_lr(self):
+        return [5*(base_lr * self.decay_factor) if self.last_epoch > 0 and self.last_epoch % 20 == 0 else (base_lr * self.decay_factor) \
+           for i,base_lr in enumerate(self.base_lrs)]
 
     def get_rat_mul_lr(self):
         return [(base_lr * self.decay_factor) * self.lr_factors[i] for i,base_lr in enumerate(self.base_lrs)]
