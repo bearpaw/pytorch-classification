@@ -11,8 +11,16 @@ class GradientRatioScheduler(lr_scheduler._LRScheduler):
 
     def get_lr(self):
         if self.cached_lrs is None:
-            self.cached_lrs = [(base_lr * self.decay_factor) * self.lr_factors[i] for i,base_lr in enumerate(self.base_lrs)]
+            self.cached_lrs = self.get_rat_mul_lr()
         return self.cached_lrs
+
+    def get_rat_mul_lr(self):
+        return [(base_lr * self.decay_factor) * self.lr_factors[i] for i,base_lr in enumerate(self.base_lrs)]
+    def get_rat_exp_disc_lr(self):
+        x = max(self.last_epoch, 1e-10) / 8
+        return [(base_lr * self.decay_factor) * \
+            (self.lr_factors[i] / math.exp(x) + math.exp(-1.0/x)) \
+            for i,base_lr in enumerate(self.base_lrs)]
 
     def get_decay_factor(self):
         return self.decay_factor
