@@ -97,5 +97,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
-chkpts_blended_/cifar10/vgg19_bn/log.eps
-chkpts_blended_/cifar10/vgg19_bn/log.txt
+
+#checkpoint files
+*.eps
+*.tar
