@@ -21,7 +21,7 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import models.cifar as models
 
-from utils import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig, GradientRatioScheduler
+from utils import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig, GradientRatioScheduler, print_model
 
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
@@ -188,6 +188,9 @@ def main():
     param_lr = GradientRatioScheduler.get_params_base_lr(model, args.lr)
     optimizer = optim.SGD(param_lr, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
     scheduler = GradientRatioScheduler(optimizer)
+
+    print_model(model)
+    input("Cont?")
 
     # Resume
     title = 'cifar-10-' + args.arch

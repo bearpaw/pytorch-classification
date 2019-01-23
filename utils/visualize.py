@@ -13,7 +13,7 @@ import csv
 
 from .misc import *   
 
-__all__ = ['make_image', 'show_batch', 'show_mask', 'show_mask_single', 'plot_results']
+__all__ = ['make_image', 'show_batch', 'show_mask', 'show_mask_single', 'plot_results', 'print_model']
 
 # functions to show an image
 def make_image(img, mean=(0,0,0), std=(1,1,1)):
@@ -185,5 +185,7 @@ def plot_results(exp_names, dataset_name, nw_name, title=None, xlabel='Epoch', r
     plot_data = get_plot_data(file_xy_name_label_lims)
     plot_log(title or (dataset_name + '-' + nw_name), xlabel, plot_data)
 
-
-
+def print_model(model):
+    for name, m in model.named_modules():
+        print(name, len(m._parameters.keys()), len(list(m.children())), 
+              len(list(m.parameters())), len(list(m.modules())))
