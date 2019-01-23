@@ -1,1 +1,0 @@
-Learning Rate	Train Loss	Valid Loss	Train Acc.	Valid Acc.	

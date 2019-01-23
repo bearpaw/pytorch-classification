@@ -145,6 +145,7 @@ def plot_log(title, xlabel, xy_data, xlim=None, cm_name='Dark2', cm_count=8):
     ax1.spines['top'].set_color((.8,.8,.8))
     ax_title = ax1.set_title(title)
     ax_title.set_weight('bold')
+    linestyles = ['-', '--', '-.', ':']
 
     for i, (xdata, ydata, ylabel, ylim) in enumerate(xy_data):
         if i == 0:
@@ -153,7 +154,8 @@ def plot_log(title, xlabel, xy_data, xlim=None, cm_name='Dark2', cm_count=8):
             ax = ax1.twinx()
         
         color = cm(i / float(len(xy_data)))
-        line = matplotlib.lines.Line2D(xdata, ydata, label=ylabel, color=color)
+        line = matplotlib.lines.Line2D(xdata, ydata, label=ylabel, color=color, 
+            linestyle=linestyles[i % len(linestyles)])
         ax.add_line(line)
         
         ax.set_ylabel(ylabel)
