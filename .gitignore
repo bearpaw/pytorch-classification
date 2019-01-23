@@ -101,3 +101,4 @@ ENV/
 #checkpoint files
 *.eps
 *.tar
+.vs/pytorch-classification/v15/.suo
