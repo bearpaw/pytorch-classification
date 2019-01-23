@@ -181,7 +181,7 @@ def plot_results(exp_names, dataset_name, nw_name, title=None, xlabel='Epoch', r
     
     
     plot_data = get_plot_data(file_xy_name_label_lims)
-    plot_log(title or exp_names[0], xlabel, plot_data)
+    plot_log(title or (dataset_name + '-' + nw_name), xlabel, plot_data)
 
 
 
