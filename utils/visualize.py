@@ -177,7 +177,8 @@ def plot_results(exp_names, dataset_name, nw_name, title=None, xlabel='Epoch', r
     
     file_xy_name_label_lims = []
     for exp_name in exp_names:
-        log_file = log_dir = os.path.join(results_base_dir, exp_name, dataset_name, nw_name, file_name)
+        log_file = log_dir = os.path.join(os.path.abspath(''), 
+            results_base_dir, exp_name, dataset_name, nw_name, file_name)
         file_xy_name_label_lims.append((log_file, None, 'Train Loss', 'Train Loss-' + exp_name, None)) 
         file_xy_name_label_lims.append((log_file, None, 'Valid Acc.', 'Test Acc-' + exp_name, (0, 100)))
     
