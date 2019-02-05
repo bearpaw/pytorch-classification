@@ -97,3 +97,8 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+#checkpoint files
+*.eps
+*.tar
+.vs/pytorch-classification/v15/.suo

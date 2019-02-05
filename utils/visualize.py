@@ -4,9 +4,16 @@ import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
 import numpy as np
+
+import matplotlib.pyplot as plt
+import matplotlib.lines
+import sys
+import os
+import csv
+
 from .misc import *   
 
-__all__ = ['make_image', 'show_batch', 'show_mask', 'show_mask_single']
+__all__ = ['make_image', 'show_batch', 'show_mask', 'show_mask_single', 'plot_results', 'print_model']
 
 # functions to show an image
 def make_image(img, mean=(0,0,0), std=(1,1,1)):
@@ -102,9 +109,84 @@ def show_mask(images, masklist, Mean=(2, 2, 2), Std=(0.5,0.5,0.5)):
         plt.axis('off')
 
 
+def get_xydata(header, rows, xcol, ycol, label=None, ylim=None):
+    xdata, ydata = [], []
+    xidx = None if xcol is None else header[xcol]
+    yidx = None if ycol is None else header[ycol]
+    for i, row in enumerate(rows):
+        xdata.append(i if xidx is None else float(row[xidx]))
+        ydata.append(i if yidx is None else float(row[yidx]))
+    return xdata, ydata, label or ycol, ylim
 
-# x = torch.zeros(1, 3, 3)
-# out = colorize(x)
-# out_im = make_image(out)
-# plt.imshow(out_im)
-# plt.show()
+def get_plot_data(file_xy_name_label_lims):
+    xy_data = []
+    for t in file_xy_name_label_lims:
+        log_file, xcol, ycol, ylabel, ylim = t
+        header = {}
+        rows = []
+        with open(log_file, mode='r') as lf:
+            reader = csv.reader(lf, delimiter='\t')
+            header_row = next(reader)
+            header = dict(list((j, i) for i,j in enumerate(header_row)))
+            rows = list(reader)
+            xy_data.append(get_xydata(header, rows, xcol, ycol, ylabel, ylim))
+    return xy_data
+
+def plot_log(title, xlabel, xy_data, xlim=None, cm_name='Dark2', cm_count=8):
+    figure = plt.figure(figsize=(10, 5))
+    cm = plt.get_cmap(cm_name)
+    ax1 = figure.add_subplot(111)
+    ax1.grid(True)
+    ax1.set_xlabel(xlabel)
+    ax1.xaxis.label.set_style('italic')
+    if xlim is not None:
+       ax1.set_xlim(xlim) 
+    ax1.spines['right'].set_color((.8,.8,.8))
+    ax1.spines['top'].set_color((.8,.8,.8))
+    ax_title = ax1.set_title(title)
+    ax_title.set_weight('bold')
+    linestyles = ['-', '--', '-.', ':']
+
+    for i, (xdata, ydata, ylabel, ylim) in enumerate(xy_data):
+        if i == 0:
+            ax = ax1
+        else:
+            ax = ax1.twinx()
+        
+        color = cm(i / float(len(xy_data)))
+        line = matplotlib.lines.Line2D(xdata, ydata, label=ylabel, color=color, 
+            linestyle=linestyles[i % len(linestyles)])
+        ax.add_line(line)
+        
+        ax.set_ylabel(ylabel)
+        ax.yaxis.label.set_color(color)
+        ax.yaxis.label.set_style('italic')
+        if ylim is not None:
+            ax.set_ylim(ylim) 
+        if i > 0:
+            pos = i * 50
+            ax.spines['right'].set_position(('outward', pos))
+            
+        ax.relim()
+        ax.autoscale_view()
+    figure.legend(loc='lower right')
+    figure.tight_layout()
+
+def plot_results(exp_names, dataset_name, nw_name, title=None, xlabel='Epoch', results_base_dir='results', file_name='log.txt'):
+    xy_name_label_lim = []
+    
+    file_xy_name_label_lims = []
+    for exp_name in exp_names:
+        log_file = log_dir = os.path.join(os.path.abspath(''), 
+            results_base_dir, exp_name, dataset_name, nw_name, file_name)
+        file_xy_name_label_lims.append((log_file, None, 'Train Loss', 'Train Loss-' + exp_name, None)) 
+        file_xy_name_label_lims.append((log_file, None, 'Valid Acc.', 'Test Acc-' + exp_name, (0, 100)))
+    
+    
+    plot_data = get_plot_data(file_xy_name_label_lims)
+    plot_log(title or (dataset_name + '-' + nw_name), xlabel, plot_data)
+
+def print_model(model):
+    for name, m in model.named_modules():
+        print(name, len(m._parameters.keys()), len(list(m.children())), 
+              len(list(m.parameters())), len(list(m.modules())))

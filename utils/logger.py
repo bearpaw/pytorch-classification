@@ -1,10 +1,15 @@
 # A simple torch style logger
 # (C) Wei YANG 2017
 from __future__ import absolute_import
+import matplotlib
+import os
+if os.name == 'posix' and "DISPLAY" not in os.environ:
+    matplotlib.use('Agg') # Must be before importing matplotlib.pyplot or pylab!
 import matplotlib.pyplot as plt
 import os
 import sys
 import numpy as np
+import numbers
 
 __all__ = ['Logger', 'LoggerMonitor', 'savefig']
 
@@ -14,10 +19,10 @@ def savefig(fname, dpi=None):
     
 def plot_overlap(logger, names=None):
     names = logger.names if names == None else names
-    numbers = logger.numbers
+    nums_d = logger.nums_d
     for _, name in enumerate(names):
-        x = np.arange(len(numbers[name]))
-        plt.plot(x, np.asarray(numbers[name]))
+        x = np.arange(len(nums_d[name]))
+        plt.plot(x, np.asarray(nums_d[name]))
     return [logger.title + '(' + name + ')' for name in names]
 
 class Logger(object):
@@ -31,14 +36,14 @@ class Logger(object):
                 self.file = open(fpath, 'r') 
                 name = self.file.readline()
                 self.names = name.rstrip().split('\t')
-                self.numbers = {}
+                self.nums_d = {}
                 for _, name in enumerate(self.names):
-                    self.numbers[name] = []
+                    self.nums_d[name] = []
 
-                for numbers in self.file:
-                    numbers = numbers.rstrip().split('\t')
-                    for i in range(0, len(numbers)):
-                        self.numbers[self.names[i]].append(numbers[i])
+                for nums_d in self.file:
+                    nums_d = nums_d.rstrip().split('\t')
+                    for i in range(0, len(nums_d)):
+                        self.nums_d[self.names[i]].append(nums_d[i])
                 self.file.close()
                 self.file = open(fpath, 'a')  
             else:
@@ -47,32 +52,36 @@ class Logger(object):
     def set_names(self, names):
         if self.resume: 
             pass
-        # initialize numbers as empty list
-        self.numbers = {}
+        # initialize nums_d as empty list
+        self.nums_d = {}
         self.names = names
         for _, name in enumerate(self.names):
             self.file.write(name)
             self.file.write('\t')
-            self.numbers[name] = []
+            self.nums_d[name] = []
         self.file.write('\n')
         self.file.flush()
 
 
-    def append(self, numbers):
-        assert len(self.names) == len(numbers), 'Numbers do not match names'
-        for index, num in enumerate(numbers):
-            self.file.write("{0:.6f}".format(num))
+    def append(self, nums_d):
+        assert len(self.names) == len(nums_d), 'nums_d do not match names'
+        for index, num in enumerate(nums_d):
+            if isinstance(num, numbers.Number):
+                self.file.write("{0:.6f}".format(num))
+                self.nums_d[self.names[index]].append(num)
+            else:
+                self.file.write(str(num))
             self.file.write('\t')
-            self.numbers[self.names[index]].append(num)
         self.file.write('\n')
         self.file.flush()
 
     def plot(self, names=None):   
         names = self.names if names == None else names
-        numbers = self.numbers
+        nums_d = self.nums_d
         for _, name in enumerate(names):
-            x = np.arange(len(numbers[name]))
-            plt.plot(x, np.asarray(numbers[name]))
+            if len(nums_d[name]) > 0:
+                x = np.arange(len(nums_d[name]))
+                plt.plot(x, np.asarray(nums_d[name]))
         plt.legend([self.title + '(' + name + ')' for name in names])
         plt.grid(True)
 

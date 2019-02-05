@@ -1,0 +1,1 @@
+python imagenet.py -a resnet18 --data /dd/da ta/ --epochs 90 --schedule 31 61 --gamma 0.1 -c checkpoints/imagenet/resnet18 --train-batc h 64

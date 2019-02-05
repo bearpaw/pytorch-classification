@@ -9,6 +9,7 @@ import os
 import shutil
 import time
 import random
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -20,8 +21,7 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import models.cifar as models
 
-from utils import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig
-
+from utils import Bar, Logger, AverageMeter, accuracy, mkdir_p, savefig, GradientRatioScheduler, print_model
 
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
@@ -71,9 +71,15 @@ parser.add_argument('--widen-factor', type=int, default=4, help='Widen factor. 4
 parser.add_argument('--growthRate', type=int, default=12, help='Growth rate for DenseNet.')
 parser.add_argument('--compressionRate', type=int, default=2, help='Compression Rate (theta) for DenseNet.')
 # Miscs
-parser.add_argument('--manualSeed', type=int, help='manual seed')
+parser.add_argument('--manualSeed', type=int, help='manual seed', default=42)
 parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
+parser.add_argument('-det', '--deterministic', dest='deterministic', action='store_true',
+                    help='Set deterministic flag for CUDA')
+parser.add_argument('--geo-lr', default=1, type=int,
+                    help='Enable Geometric learning rate on every ith batch')
+parser.add_argument('--save-checkpoint-model', dest='save_checkpoint_model', action='store_true',
+                    help='Save model on checkpoint')
 #Device options
 parser.add_argument('--gpu-id', default='0', type=str,
                     help='id(s) for CUDA_VISIBLE_DEVICES')
@@ -89,12 +95,17 @@ os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_id
 use_cuda = torch.cuda.is_available()
 
 # Random seed
+if args.deterministic:
+    torch.backends.cudnn.deterministic = True
 if args.manualSeed is None:
     args.manualSeed = random.randint(1, 10000)
 random.seed(args.manualSeed)
+np.random.seed(args.manualSeed)
 torch.manual_seed(args.manualSeed)
 if use_cuda:
     torch.cuda.manual_seed_all(args.manualSeed)
+else:
+    print("WARNING: CUDA is not available")
 
 best_acc = 0  # best test accuracy
 
@@ -104,8 +115,6 @@ def main():
 
     if not os.path.isdir(args.checkpoint):
         mkdir_p(args.checkpoint)
-
-
 
     # Data
     print('==> Preparing dataset %s' % args.dataset)
@@ -127,12 +136,13 @@ def main():
         dataloader = datasets.CIFAR100
         num_classes = 100
 
-
     trainset = dataloader(root='./data', train=True, download=True, transform=transform_train)
-    trainloader = data.DataLoader(trainset, batch_size=args.train_batch, shuffle=True, num_workers=args.workers)
+    trainloader = data.DataLoader(trainset, batch_size=args.train_batch, shuffle=True, 
+        num_workers=args.workers)
 
     testset = dataloader(root='./data', train=False, download=False, transform=transform_test)
-    testloader = data.DataLoader(testset, batch_size=args.test_batch, shuffle=False, num_workers=args.workers)
+    testloader = data.DataLoader(testset, batch_size=args.test_batch, shuffle=False, 
+        num_workers=args.workers)
 
     # Model
     print("==> creating model '{}'".format(args.arch))
@@ -167,12 +177,20 @@ def main():
                 )
     else:
         model = models.__dict__[args.arch](num_classes=num_classes)
+    
+    print("Geometric LR: {}".format(args.geo_lr))
 
     model = torch.nn.DataParallel(model).cuda()
     cudnn.benchmark = True
     print('    Total params: %.2fM' % (sum(p.numel() for p in model.parameters())/1000000.0))
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+
+    param_lr = GradientRatioScheduler.get_params_base_lr(model, args.lr)
+    optimizer = optim.SGD(param_lr, lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    scheduler = GradientRatioScheduler(optimizer)
+
+    print_model(model)
+    input("Cont?")
 
     # Resume
     title = 'cifar-10-' + args.arch
@@ -189,7 +207,7 @@ def main():
         logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title=title, resume=True)
     else:
         logger = Logger(os.path.join(args.checkpoint, 'log.txt'), title=title)
-        logger.set_names(['Learning Rate', 'Train Loss', 'Valid Loss', 'Train Acc.', 'Valid Acc.'])
+        logger.set_names(['Epoch', 'Train Loss', 'Valid Loss', 'Train Acc.', 'Valid Acc.', 'Time', 'Learning Rate'])
 
 
     if args.evaluate:
@@ -200,26 +218,28 @@ def main():
 
     # Train and val
     for epoch in range(start_epoch, args.epochs):
-        adjust_learning_rate(optimizer, epoch)
+        adjust_learning_rate(scheduler, epoch)
 
-        print('\nEpoch: [%d | %d] LR: %f' % (epoch + 1, args.epochs, state['lr']))
+        print('\nEpoch: [%d | %d] LR: %f' % (epoch + 1, args.epochs, max(scheduler.get_lr())))
 
-        train_loss, train_acc = train(trainloader, model, criterion, optimizer, epoch, use_cuda)
+        st = time.time()
+        train_loss, train_acc = train(trainloader, model, criterion, optimizer, scheduler, epoch, use_cuda)
         test_loss, test_acc = test(testloader, model, criterion, epoch, use_cuda)
 
         # append logger file
-        logger.append([state['lr'], train_loss, test_loss, train_acc, test_acc])
+        logger.append([epoch, train_loss, test_loss, train_acc, test_acc, time.time()-st, scheduler.get_lr()])
 
         # save model
         is_best = test_acc > best_acc
         best_acc = max(test_acc, best_acc)
-        save_checkpoint({
-                'epoch': epoch + 1,
-                'state_dict': model.state_dict(),
-                'acc': test_acc,
-                'best_acc': best_acc,
-                'optimizer' : optimizer.state_dict(),
-            }, is_best, checkpoint=args.checkpoint)
+        if args.save_checkpoint_model:
+            save_checkpoint({
+                    'epoch': epoch + 1,
+                    'state_dict': model.state_dict(),
+                    'acc': test_acc,
+                    'best_acc': best_acc,
+                    'optimizer' : optimizer.state_dict(),
+                }, is_best, checkpoint=args.checkpoint)
 
     logger.close()
     logger.plot()
@@ -228,7 +248,7 @@ def main():
     print('Best acc:')
     print(best_acc)
 
-def train(trainloader, model, criterion, optimizer, epoch, use_cuda):
+def train(trainloader, model, criterion, optimizer, scheduler,epoch, use_cuda):
     # switch to train mode
     model.train()
 
@@ -254,14 +274,19 @@ def train(trainloader, model, criterion, optimizer, epoch, use_cuda):
 
         # measure accuracy and record loss
         prec1, prec5 = accuracy(outputs.data, targets.data, topk=(1, 5))
-        losses.update(loss.data[0], inputs.size(0))
-        top1.update(prec1[0], inputs.size(0))
-        top5.update(prec5[0], inputs.size(0))
+        losses.update(loss.item(), inputs.size(0))
+        top1.update(prec1.item(), inputs.size(0))
+        top5.update(prec5.item(), inputs.size(0))
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
+        if args.geo_lr > 0 and batch_idx % args.geo_lr == 0:
+            with torch.no_grad():
+                scheduler.on_after_batch()
+                scheduler.step(epoch)
 
         # measure elapsed time
         batch_time.update(time.time() - end)
@@ -303,17 +328,18 @@ def test(testloader, model, criterion, epoch, use_cuda):
 
         if use_cuda:
             inputs, targets = inputs.cuda(), targets.cuda()
-        inputs, targets = torch.autograd.Variable(inputs, volatile=True), torch.autograd.Variable(targets)
+        inputs, targets = torch.autograd.Variable(inputs), torch.autograd.Variable(targets)
 
         # compute output
-        outputs = model(inputs)
-        loss = criterion(outputs, targets)
+        with torch.no_grad():
+            outputs = model(inputs)
+            loss = criterion(outputs, targets)
 
-        # measure accuracy and record loss
-        prec1, prec5 = accuracy(outputs.data, targets.data, topk=(1, 5))
-        losses.update(loss.data[0], inputs.size(0))
-        top1.update(prec1[0], inputs.size(0))
-        top5.update(prec5[0], inputs.size(0))
+            # measure accuracy and record loss
+            prec1, prec5 = accuracy(outputs.data, targets.data, topk=(1, 5))
+            losses.update(loss.item(), inputs.size(0))
+            top1.update(prec1.item(), inputs.size(0))
+            top5.update(prec5.item(), inputs.size(0))
 
         # measure elapsed time
         batch_time.update(time.time() - end)
@@ -341,12 +367,10 @@ def save_checkpoint(state, is_best, checkpoint='checkpoint', filename='checkpoin
     if is_best:
         shutil.copyfile(filepath, os.path.join(checkpoint, 'model_best.pth.tar'))
 
-def adjust_learning_rate(optimizer, epoch):
+def adjust_learning_rate(scheduler, epoch):
     global state
     if epoch in args.schedule:
-        state['lr'] *= args.gamma
-        for param_group in optimizer.param_groups:
-            param_group['lr'] = state['lr']
+        scheduler.set_decay_factor(scheduler.get_decay_factor() * args.gamma)
 
 if __name__ == '__main__':
     main()
