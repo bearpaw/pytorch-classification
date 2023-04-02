@@ -254,9 +254,9 @@ def train(trainloader, model, criterion, optimizer, epoch, use_cuda):
 
         # measure accuracy and record loss
         prec1, prec5 = accuracy(outputs.data, targets.data, topk=(1, 5))
-        losses.update(loss.data[0], inputs.size(0))
-        top1.update(prec1[0], inputs.size(0))
-        top5.update(prec5[0], inputs.size(0))
+        losses.update(loss.data, inputs.size(0))
+        top1.update(prec1, inputs.size(0))
+        top5.update(prec5, inputs.size(0))
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
@@ -311,9 +311,9 @@ def test(testloader, model, criterion, epoch, use_cuda):
 
         # measure accuracy and record loss
         prec1, prec5 = accuracy(outputs.data, targets.data, topk=(1, 5))
-        losses.update(loss.data[0], inputs.size(0))
-        top1.update(prec1[0], inputs.size(0))
-        top5.update(prec5[0], inputs.size(0))
+        losses.update(loss.data, inputs.size(0))
+        top1.update(prec1, inputs.size(0))
+        top5.update(prec5, inputs.size(0))
 
         # measure elapsed time
         batch_time.update(time.time() - end)
